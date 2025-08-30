@@ -1,0 +1,107 @@
+site_name: Terra Draw Tutorials
+site_description: This is tutorial documentation for Terra Draw drawing library for all mapping applications.
+
+docs_dir: docs
+site_dir: site
+
+# Repository
+repo_name: JamesLMilner/terra-draw
+repo_url: https://github.com/JamesLMilner/terra-draw
+edit_uri: https://github.com/watergis/terradraw-workshop/blob/main/docs
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: octicons/moon-24
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue grey
+      accent: light blue
+      toggle:
+        icon: octicons/sun-24
+        name: Switch to light mode
+  logo: assets/images/favicon.png
+  favicon: assets/images/favicon.ico
+  features:
+    - announce.dismiss
+    - content.action.edit
+    - content.action.view
+    - content.code.annotate
+    - content.code.copy
+    # - content.code.select
+    # - content.footnote.tooltips
+    # - content.tabs.link
+    - content.tooltips
+    # - header.autohide
+    # - navigation.expand
+    - navigation.footer
+    - navigation.indexes
+    # - navigation.instant
+    # - navigation.instant.prefetch
+    # - navigation.instant.progress
+    # - navigation.prune
+    - navigation.sections
+    # - navigation.tabs
+    # - navigation.tabs.sticky
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
+    - toc.follow
+    # - toc.integrate
+
+# These extensions are chosen to be a superset of Pandoc's Markdown.
+# This way, I can write in Pandoc's Markdown and have it be supported here.
+# https://pandoc.org/MANUAL.html
+# https://github.com/kylebarron/cogeo-mosaic/blob/mkdocs/mkdocs.yml#L50-L75
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - codehilite:
+      guess_lang: false
+  - def_list
+  - footnotes
+  - pymdownx.arithmatex
+  - pymdownx.betterem
+  - pymdownx.caret:
+      insert: false
+  - pymdownx.details
+  - pymdownx.emoji
+  - pymdownx.escapeall:
+      hardbreak: true
+      nbsp: true
+  - pymdownx.magiclink:
+      hide_protocol: true
+      repo_url_shortener: true
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+  - toc:
+      permalink: true
+  - pymdownx.superfences:
+      # make exceptions to highlighting of code:
+
+plugins:
+  - search
+  - git-authors
+  - caption
+  - git-revision-date-localized:
+      type: datetime
+      fallback_to_build_date: false
+      enable_creation_date: true
+
+
+nav:
+  - Home: index.md
+  - Workshops:
+    - FOSS4G 2025 Auckland: workshops/foss4g2025/index.md
