@@ -28,7 +28,7 @@ To participate in this workshop, please ensure you have:
 
 | Time | Duration | Section |
 |------|----------|---------|
-| 0:00-0:30 | 30 min | [Introduction & Setup](#introduction--setup) |
+| 0:00-0:30 | 30 min | [Introduction & Setup](#introduction-setup) |
 | 0:30-1:15 | 45 min | [Part 1: Terra Draw Basics](#part-1-terra-draw-basics) |
 | 1:15-1:30 | 15 min | Break |
 | 1:30-2:30 | 60 min | [Part 2: Advanced Features](#part-2-advanced-features) |
@@ -38,7 +38,7 @@ To participate in this workshop, please ensure you have:
 
 ---
 
-## Introduction & Setup
+## Introduction Setup
 
 ### What is Terra Draw?
 
