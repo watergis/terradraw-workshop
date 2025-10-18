@@ -106,9 +106,32 @@ nav:
   - Workshops:
     - FOSS4G 2025 Auckland:
       - Introduction: workshops/foss4g2025/index.md
-      - Environment Setup: workshops/foss4g2025/setup.md
-      - Terra Draw Basics: workshops/foss4g2025/basics.md
-      - Advanced Features: workshops/foss4g2025/advanced.md
-      - MapLibre Integration: workshops/foss4g2025/maplibre.md
-      - Multi-library Support: workshops/foss4g2025/multi-library.md
+      - Environment Setup:
+        - Overview: workshops/foss4g2025/setup.md
+        - Project Setup: workshops/foss4g2025/setup/project-setup.md
+      - Terra Draw Basics:
+        - Core Concepts: workshops/foss4g2025/basics.md
+        - First Implementation: workshops/foss4g2025/basics/implementation.md
+        - Understanding Modes: workshops/foss4g2025/basics/modes.md
+        - Data Structure: workshops/foss4g2025/basics/data-structure.md
+        - Exercise 1 - Basic Drawing: workshops/foss4g2025/basics/exercise-1.md
+        - Exercise 2 - Exploring Data: workshops/foss4g2025/basics/exercise-2.md
+      - Advanced Features:
+        - Custom Styling: workshops/foss4g2025/advanced.md
+        - Event Handling: workshops/foss4g2025/advanced/events.md
+        - Data Management: workshops/foss4g2025/advanced/data-management.md
+        - Exercise 3 - Advanced Styling: workshops/foss4g2025/advanced/exercise-3.md
+        - Exercise 4 - Event-Driven App: workshops/foss4g2025/advanced/exercise-4.md
+      - MapLibre Integration:
+        - Introduction: workshops/foss4g2025/maplibre.md
+        - Basic Usage: workshops/foss4g2025/maplibre/basic-usage.md
+        - Production Practices: workshops/foss4g2025/maplibre/production.md
+        - Exercise 5 - Complete App: workshops/foss4g2025/maplibre/exercise-5.md
+      - Multi-library Support:
+        - Adapter Pattern: workshops/foss4g2025/multi-library.md
+        - Leaflet Example: workshops/foss4g2025/multi-library/leaflet.md
+        - OpenLayers Example: workshops/foss4g2025/multi-library/openlayers.md
+        - Universal Component: workshops/foss4g2025/multi-library/universal.md
+        - Library Comparison: workshops/foss4g2025/multi-library/comparison.md
+        - Exercise 6 - Multi-library: workshops/foss4g2025/multi-library/exercise-6.md
       - Troubleshooting: workshops/foss4g2025/troubleshooting.md
