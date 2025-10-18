@@ -104,4 +104,18 @@ plugins:
 nav:
   - Home: index.md
   - Workshops:
-    - FOSS4G 2025 Auckland: workshops/foss4g2025/index.md
+    - FOSS4G 2025 Auckland:
+      - Introduction: workshops/foss4g2025/index.md
+      - Getting started: workshops/foss4g2025/getting-started.md
+      - Terra Draw Basics:
+        - workshops/foss4g2025/basics/index.md
+        - Exercise 1 Without UI: workshops/foss4g2025/basics/exercise-1.md
+        - Exercise 2 With UI: workshops/foss4g2025/basics/exercise-2.md
+        - Exercise 3 With Select mode: workshops/foss4g2025/basics/exercise-3.md
+      - Advanced Features:
+        - workshops/foss4g2025/advanced/index.md
+        - Exercise 4 Custom Styling: workshops/foss4g2025/advanced/exercise-4.md
+        - Exercise 5 Event Handling: workshops/foss4g2025/advanced/exercise-5.md
+        - Exercise 6  Data Management: workshops/foss4g2025/advanced/exercise-6.md
+      - Maplibre TerraDraw plugin:
+        - workshops/foss4g2025/plugin/index.md
