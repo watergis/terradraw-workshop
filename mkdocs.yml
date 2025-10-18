@@ -104,4 +104,11 @@ plugins:
 nav:
   - Home: index.md
   - Workshops:
-    - FOSS4G 2025 Auckland: workshops/foss4g2025/index.md
+    - FOSS4G 2025 Auckland:
+      - Introduction: workshops/foss4g2025/index.md
+      - Environment Setup: workshops/foss4g2025/setup.md
+      - Terra Draw Basics: workshops/foss4g2025/basics.md
+      - Advanced Features: workshops/foss4g2025/advanced.md
+      - MapLibre Integration: workshops/foss4g2025/maplibre.md
+      - Multi-library Support: workshops/foss4g2025/multi-library.md
+      - Troubleshooting: workshops/foss4g2025/troubleshooting.md
