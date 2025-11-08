@@ -104,8 +104,9 @@ plugins:
 nav:
   - Home: index.md
   - Workshops:
+    - workshops/index.md
     - FOSS4G 2025 Auckland:
-      - Introduction: workshops/foss4g2025/index.md
+      - FOSS4G 2025 Workshop: workshops/foss4g2025/index.md
       - Getting started: workshops/foss4g2025/getting-started.md
       - Terra Draw Basics:
         - workshops/foss4g2025/basics/index.md
