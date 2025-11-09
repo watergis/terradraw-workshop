@@ -118,5 +118,5 @@ nav:
         - Exercise 4 Custom Styling: workshops/foss4g2025/advanced/exercise-4.md
         - Exercise 5 Event Handling: workshops/foss4g2025/advanced/exercise-5.md
         - Exercise 6  Data Management: workshops/foss4g2025/advanced/exercise-6.md
-      - Maplibre TerraDraw plugin:
-        - workshops/foss4g2025/plugin/index.md
+      - Leaflet intergartion: workshops/foss4g2025/leaflet.md
+      - Maplibre TerraDraw plugin: workshops/foss4g2025/maplibre-gl-terradraw.md

@@ -33,7 +33,8 @@ To participate in this workshop, please ensure you have:
 | 10 min | Break |
 | 60 min | [Advanced Features with 3 exercises](./advanced/index.md) |
 | 10 min | Break |
-| 30 min | [maplibre-gl-terradraw introduction](./plugin/index.md) |
+| 15 min | [switch maplibre to leaflet](./leaflet.md) |
+| 15 min | [maplibre-gl-terradraw introduction](./maplibre-gl-terradraw.md) |
 
 ### Workshop materials
 
@@ -43,7 +44,7 @@ Example codes are available in [watergis/terradraw-workshop-template](https://gi
 
 - Workshop documentation
 
-Workshop documentation is available at [watergis/terradraw-workshop](https://github.com/watergis/terradraw-workshop]
+Workshop documentation is available at [watergis/terradraw-workshop](https://github.com/watergis/terradraw-workshop)
 
 ## Getting Started
 
