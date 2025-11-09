@@ -27,7 +27,7 @@ To participate in this workshop, please ensure you have:
 
 | Duration | Section |
 |----------|---------|
-| 25 min | TerraDraw Introduction by James |
+| 25 min | TerraDraw Introduction |
 | 15 min | [Environment Setup](./getting-started.md) |
 | 60 min | [Terra Draw Basics with 3 exercises](./basics/index.md) |
 | 10 min | Break |
@@ -35,6 +35,8 @@ To participate in this workshop, please ensure you have:
 | 10 min | Break |
 | 15 min | [switch maplibre to leaflet](./leaflet.md) |
 | 15 min | [maplibre-gl-terradraw introduction](./maplibre-gl-terradraw.md) |
+
+TerraDraw introduction slides are available at [FOSS4G Europe 2025 Mostar](https://talks.osgeo.org/foss4g-europe-2025/talk/XHMYBK/).
 
 ### Workshop materials
 
