@@ -6,21 +6,27 @@ Let's create a basic Terra Draw setup with MapLibre GL JS. Update your `src/rout
 
 Firstly, we can setup Terra Draw without any UI interaction.
 
-Open `+page.svelte`, add the following codes in the `<script>` tag section.
+Open `+page.svelte`, add the following codes in the `<script>` tag section just under the other imports.
 
 ```ts
 import { TerraDraw, TerraDrawRectangleMode } from 'terra-draw'
 import { TerraDrawMapLibreGLAdapter } from 'terra-draw-maplibre-gl-adapter';
 
+let draw: TerraDraw | undefined;
+```
+
+Then update the existing `onMount()` method to also intialize the TerraDraw library after the MapLibre map is created.
+
+```ts
 onMount(() => {
-    // Add codes in the last section of onMount
+    // Add codes in the last section of onMount after the map initialization
 
-    const draw = new TerraDraw({
-    // Using the MapLibre Adapter
-    adapter: new TerraDrawMapLibreGLAdapter({ map }),
+    draw = new TerraDraw({
+        // Using the MapLibre Adapter
+        adapter: new TerraDrawMapLibreGLAdapter({ map }),
 
-    // Add the Rectangle Mode
-    modes: [new TerraDrawRectangleMode()],
+        // Add the Rectangle Mode
+        modes: [new TerraDrawRectangleMode()],
     });
 
     // Have to wait maplibre to load map style before starting to draw

@@ -155,7 +155,7 @@ This code will change point and polygon outline color for select mode.
 Furthermore, you can try to pass styling function instead of fixed value like below.
 
 ```ts
-import { TerraDrawExt } from 'terra-draw';
+import { TerraDrawExtend } from 'terra-draw';
 
 // Function to generate a random hex color - can adjust as needed
 function getRandomColor() {

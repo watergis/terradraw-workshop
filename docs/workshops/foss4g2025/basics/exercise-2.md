@@ -6,9 +6,9 @@ Let's create a basic Terra Draw setup with more modes and UI buttons. Update you
 
 Here, we can add basic `point`, `linestring`, `polygon` modes with buttons and clear button to remove all features.
 
-Firstly, import `TerraDrawPointMode`, `TerraDrawLineStringMode` and `TerraDrawPolygonMode` in script tag.
+Firstly, import `TerraDrawPointMode`, `TerraDrawLineStringMode` and `TerraDrawPolygonMode` in script tag. Note that we are removing `TerraDrawRectangleMode` from the imports.
 
-Then, declare `draw` variable. Using `$state()`, the variable becomes reactive.
+Then, update the declaration of the `draw` variable. By using `$state()`, the variable becomes reactive.
 
 ```ts
 import {
@@ -21,7 +21,20 @@ import {
 let draw: TerraDraw | undefined = $state();
 ```
 
-Then, remove `draw.setMode("rectangle");` from the last section.
+Update the `modes:` array in the initialization of TerraDraw object to include the new drawing modes.
+
+```ts
+draw = new TerraDraw({
+    adapter: new TerraDrawMapLibreGLAdapter({ map }),
+    modes: [
+        new TerraDrawPointMode(),
+        new TerraDrawLineStringMode(),
+        new TerraDrawPolygonMode()
+    ]
+});
+```
+
+Then, remove `draw.setMode("rectangle");` from the last section so that we don't automtaically start with any drawing tool.
 
 ```diff
 onMount(() => {
@@ -35,7 +48,7 @@ onMount(() => {
 
 ## Add methods
 
-Add two methods in the last of `script` tag.
+Add two methods just before the closing `script` tag, outside the closing brackets of the `onMount()` function.
 
 ```ts
 const handleModeClick = (mode: string) => {
@@ -49,7 +62,7 @@ const handleClearClick = () => {
 
 ## Add buttons
 
-Add buttons to HTML section of component
+Add buttons to HTML section of component by replacing the existing `<asside>` tag in the template.
 
 ```html
 <aside class="sidebar">

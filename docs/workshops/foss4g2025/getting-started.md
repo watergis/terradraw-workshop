@@ -10,6 +10,12 @@ A template project used for the workshop is prepared. You can download it by the
 git clone git@github.com:watergis/terradraw-workshop-template.git
 ```
 
+If you don't use SSH, you can clone via HTTP using
+
+```bash
+git clone https://github.com/watergis/terradraw-workshop-template.git
+```
+
 Go to [3. launch Sveltekit](#3-launch-sveltekit) section to continue.
 
 ## 2. Create workshop template manually

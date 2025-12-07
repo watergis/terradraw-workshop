@@ -56,7 +56,7 @@ const handleDeleteClick = () =>{
     if (targetFeature && targetFeature.id) {
         draw?.removeFeatures([targetFeature.id]);
     }
-}
+};
 ```
 
 Then, add the following HTML in the last of sidebar class.
