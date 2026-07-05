@@ -18,6 +18,46 @@
 - `answer` (optional): solution shown read-only in the Answer tab, with a
   "Copy answer to editor" button. Omit it and the Answer tab is hidden.
 - `height` (optional, px, default 480).
+- `lib` (optional, default `maplibre`): which preview environment the iframe
+  provides — one of the `LIBS` registry keys in live-editor.js (`maplibre`,
+  `leaflet`, `openlayers`, `mapbox`, `google`, `arcgis`). Exactly ONE
+  library per widget instance; environments are never mixed (the Leaflet
+  migration page uses two separate widgets instead).
+- `boilerplate="none"` (optional): skip the MapLibre map boilerplate so the
+  user code creates its own map into `#map`. Non-maplibre libs never get the
+  boilerplate; a maplibre widget whose code creates its own map (the
+  other-libraries baseline) needs this attribute explicitly.
+
+## Per-library environments (`LIBS` registry)
+
+Each `LIBS` entry holds import-map entries, CSS URLs, and a `keys` list of
+API-key placeholder names. `terra-draw` is merged into every import map from
+the shared unpkg `terra-draw.modern.js` URL. Verified CDN facts (2026-07):
+
+- All terra-draw adapters ship `dist/*.modern.js` real-ESM builds on unpkg
+  whose only bare imports are `terra-draw` (plus `leaflet` for the Leaflet
+  adapter) — the OpenLayers/Google/ArcGIS adapters get their mapping-library
+  classes via constructor `lib` injection, so no extra import-map entries.
+- `leaflet` and `mapbox-gl` are UMD-only → esm.sh (default export).
+- OpenLayers: import-map **prefix** `"ol/": "https://esm.sh/ol@<pin>/"`
+  resolves `ol/Map.js` style imports; works.
+- ArcGIS: official ESM CDN prefix `"@arcgis/core/":
+  "https://js.arcgis.com/4.33/@arcgis/core/"` works. Esri's `osm` basemap is
+  403-blocked by OSM's tile policy — use a keyless CARTO `WebTileLayer`
+  basemap instead (as in code/other-libraries/arcgis/start.ts).
+- Google Maps: `@googlemaps/js-api-loader@2` from esm.sh
+  (`setOptions` + `await importLibrary('maps')`, top-level await is fine in
+  the module script). Adapter takes `lib: google.maps`; start draw inside
+  `map.addListener('projection_changed', ...)`.
+
+## API keys (`keys.js`)
+
+`scripts/generate_keys.py` writes gitignored
+`docs/assets/live-editor/keys.js` (env vars first — that's Cloudflare Pages —
+then `.env`; see `.env.example` and README). The widget lazy-imports it
+(404 → empty) and replaces `__MAPBOX_ACCESS_TOKEN__` / `__GOOGLE_MAPS_API_KEY__`
+/ `__ARCGIS_API_KEY__` literals in the transpiled user code before running;
+a missing-but-referenced key adds a friendly console-strip message.
 
 **Path rule (important):** Zensical uses directory URLs, so a page
 `basics/exercise-1.md` is served at `.../basics/exercise-1/`. Raw HTML

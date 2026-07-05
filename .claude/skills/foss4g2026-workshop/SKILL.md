@@ -35,6 +35,7 @@ repository (Zensical static site, `docs/` → `site/`).
 | `docs/assets/live-editor/` | Reusable live-editor widget (JS/CSS) |
 | `zensical.toml` | Site config and nav — add 2026 pages to `nav` |
 | `references/implementation-plan.md` | Full phased implementation plan |
+| `references/other-libraries-plan.md` | Plan for the per-library "Other mapping libraries" pages (Leaflet/OpenLayers/Mapbox/Google/ArcGIS live editors, API-key build injection) |
 
 ## Rules
 
@@ -59,7 +60,9 @@ repository (Zensical static site, `docs/` → `site/`).
 ## Workflow
 
 1. Read [references/implementation-plan.md](references/implementation-plan.md)
-   and find the current phase (check which files already exist).
+   and find the current phase (check which files already exist). For the
+   "Other mapping libraries" section, follow
+   [references/other-libraries-plan.md](references/other-libraries-plan.md).
 2. Implement one phase at a time; keep the site building between phases.
 3. For live-editor work, follow
    [references/live-editor-widget.md](references/live-editor-widget.md) —
