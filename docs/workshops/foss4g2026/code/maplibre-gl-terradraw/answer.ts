@@ -14,6 +14,7 @@ const drawControl = new MaplibreTerradrawControl({
 		'rectangle',
 		'circle',
 		'freehand',
+		'text',
 		'select',
 		'delete-selection',
 		'delete',
