@@ -21,7 +21,7 @@ const PINS = {
   maplibre: '5.24.0',
   terraDraw: '1.31.2',
   adapter: '1.4.1', // terra-draw-maplibre-gl-adapter
-  plugin: '1.14.1', // @watergis/maplibre-gl-terradraw
+  plugin: '1.14.3', // @watergis/maplibre-gl-terradraw
   sucrase: '3.35.1',
   codemirror: '6.0.2',
   langJavascript: '6.2.5'

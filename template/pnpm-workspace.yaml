@@ -1,0 +1,2 @@
+minimumReleaseAgeExclude:
+  - '@watergis/maplibre-gl-terradraw@1.14.3'
