@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "zensical",
+      "runtimeExecutable": "uv",
+      "runtimeArgs": ["run", "zensical", "serve"],
+      "port": 8000
+    }
+  ]
+}

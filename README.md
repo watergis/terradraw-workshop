@@ -18,6 +18,12 @@ uv sync
 uv run zensical serve
 ```
 
+- Format code with Ruff
+
+```bash
+uv run ruff format .
+```
+
 Open http://localhost:8000/
 
 ## Build

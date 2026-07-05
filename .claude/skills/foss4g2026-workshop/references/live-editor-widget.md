@@ -1,101 +1,119 @@
-# Live Editor Widget — Design Spec
+# Live Editor Widget — Implementation Notes (as built)
 
-A reusable widget for Zensical pages: TypeScript editor (left) + live map
-preview (right) + tabs, so attendees see code and result side by side without
-leaving the docs.
-
-## UX
-
-```
-┌─ Tabs: [Exercise] [Answer] ────────────────── [Run ▶] [Reset ↺] ┐
-│ ┌──────────────────────────┐ ┌──────────────────────────────┐ │
-│ │  Code editor (TS)        │ │  Map preview (iframe)        │ │
-│ │  starter code, editable  │ │  re-runs on Run / Cmd+Enter  │ │
-│ └──────────────────────────┘ └──────────────────────────────┘ │
-└────────────────────────────────────────────────────────────────┘
-```
-
-- **Exercise tab**: editable starter code + live preview.
-- **Answer tab**: read-only solution with its own preview, plus a
-  "Copy answer to editor" button (confirm before overwriting user edits).
-- **Run** re-executes; **Reset** restores the starter code.
-- Errors (transpile or runtime) render in a console strip under the preview.
+`<terra-draw-editor>` is implemented in `docs/assets/live-editor/live-editor.js`
+(+ `live-editor.css`, + `vendor/editor-bundle.js`) and wired into Zensical via
+`extra_javascript` (with `type = "module"`) and `extra_css` in `zensical.toml`.
 
 ## Embedding API
 
-`md_in_html` is enabled, so pages can use raw HTML. Custom superfences hooks
-are Python-only and may not exist in Zensical — use a **web component**, not a
-custom fence:
-
 ```html
 <terra-draw-editor
-  start="./code/exercise-1/start.ts"
-  answer="./code/exercise-1/answer.ts"
+  start="../../code/exercise-1/start.ts"
+  answer="../../code/exercise-1/answer.ts"
   height="480">
 </terra-draw-editor>
 ```
 
-Paths are relative to the page. Zensical (like MkDocs) copies non-markdown
-files from `docs/` into `site/` — **verify `.ts` files are copied on the first
-build; if not, use `.ts.txt` extensions or move code under `docs/assets/`.**
+- `start` (required): starter TypeScript, editable in the Exercise tab.
+- `answer` (optional): solution shown read-only in the Answer tab, with a
+  "Copy answer to editor" button. Omit it and the Answer tab is hidden.
+- `height` (optional, px, default 480).
+
+**Path rule (important):** Zensical uses directory URLs, so a page
+`basics/exercise-1.md` is served at `.../basics/exercise-1/`. Raw HTML
+attributes are NOT rewritten like markdown links, so paths must be relative
+to the *output* URL: from `basics/exercise-1.md` use `../../code/...`; from a
+top-level page like `maplibre-gl-terradraw.md` use `../code/...`.
 
 ## Architecture
 
-All client-side; no build step for the widget itself.
+- **Editor**: CodeMirror 6 + **Sucrase** (browser TS-stripping, no type
+  checking), pre-bundled into a single self-hosted ESM file
+  `docs/assets/live-editor/vendor/editor-bundle.js`. Self-hosting avoids two
+  real CDN failures found during development: esm.sh returned 500s for
+  `@codemirror/view@^6.x` sub-dependency URLs, and loading codemirror +
+  lang-javascript as separate jsdelivr `+esm` bundles produced duplicate
+  `@codemirror/state` instances ("Unrecognized extension value"). jsdelivr's
+  `+esm` build of sucrase is also broken (CJS interop).
 
-1. **Editor**: CodeMirror 6 via ESM CDN (small, no worker requirement).
-   Monaco is the fallback if TS syntax support in CM6 proves lacking, but
-   Monaco is heavy — prefer CM6.
-2. **Transpile**: [Sucrase](https://github.com/alangpierce/sucrase) in the
-   browser (~100 KB, fast, strips TS types). No type-checking — that's fine
-   for a workshop.
-3. **Preview**: sandboxed `<iframe srcdoc>` regenerated on each Run:
-   - `<script type="importmap">` mapping `terra-draw`,
-     `terra-draw-maplibre-gl-adapter`, `maplibre-gl` to **pinned** esm.sh (or
-     jsdelivr `+esm`) URLs. Keep pins in ONE constant in live-editor.js.
-   - maplibre-gl CSS link, full-size `#map` div.
-   - Boilerplate creates the MapLibre `map` instance; the user code module
-     imports what it needs and receives/creates the map. Keep the contract
-     identical to the SvelteKit template code (same variable names) so
-     copy-paste between editor and local project works.
-4. **State**: keep user edits per exercise in `sessionStorage`
-   (key = page path + start file) so tab switches / reloads don't lose work.
+  Rebuild the bundle with:
 
-## Zensical integration
+  ```bash
+  npm install codemirror@6.0.2 @codemirror/lang-javascript@6.2.5 sucrase@3.35.1 esbuild
+  # entry.js:
+  #   export { EditorView, basicSetup } from 'codemirror';
+  #   export { javascript } from '@codemirror/lang-javascript';
+  #   export { transform } from 'sucrase';
+  npx esbuild entry.js --bundle --format=esm --minify --outfile=editor-bundle.js
+  ```
 
-- Files: `docs/assets/live-editor/live-editor.js`, `live-editor.css`.
-- Wire in via Zensical's extra assets config. **Verify the exact key** in the
-  Zensical docs (https://zensical.org) — expected to mirror MkDocs:
+- **Preview**: sandboxed `<iframe srcdoc>` (`sandbox="allow-scripts"`),
+  recreated on every Run. It contains an import map (versions pinned in the
+  `PINS` constant at the top of live-editor.js):
+  - `maplibre-gl` → esm.sh (maplibre ships UMD only; esm.sh adds named ESM
+    exports — jsdelivr `+esm` does NOT export `LngLat` etc. and breaks the
+    plugin)
+  - `terra-draw` → unpkg `dist/terra-draw.modern.js` (real ESM)
+  - `terra-draw-maplibre-gl-adapter` → unpkg `dist/*.modern.js` (imports
+    only bare `terra-draw`, resolved by the same import map → single
+    instance)
+  - `@watergis/maplibre-gl-terradraw` → unpkg `dist/maplibre-gl-terradraw.es.js`
+    (imports only bare `maplibre-gl`; terra-draw is bundled inside)
+- **Boilerplate**: a module script in the iframe creates the MapLibre map
+  (keyless OpenFreeMap `bright` vector style, `MAP_STYLE` constant), centred
+  on Hiroshima, adds Navigation + **Fullscreen** + Attribution controls, and
+  assigns `window.map`. The user code runs as a second module script and
+  accesses `map` as a global (`declare const map: Map;` in the exercise
+  files). A `<div id="sidebar">` (hidden when empty) hosts buttons added via
+  the exercises' `addButton()` helper. maplibre-gl and the plugin CSS are
+  linked from unpkg. The preview iframe carries `allow="fullscreen"`.
+- **Console strip**: the iframe hooks `window.onerror`,
+  `unhandledrejection`, `console.log/error` and posts them to the parent
+  with a per-widget id; they render under the preview.
+- **Tabs**: exercise and answer each mount their own CodeMirror view into a
+  separate `.tde-editor-pane`; the inactive one gets `.tde-hidden`
+  (`display:none !important`). Do NOT stack both views in one scroll host and
+  toggle inline `display` — that regressed into both panes showing (answer
+  visible when scrolling the exercise). `applyTabVisibility()` is the single
+  source of truth for which pane shows.
+- **Resizable splitter**: `.tde-splitter` between editor and preview; drag
+  sets the editor's `flex-basis` % (clamped 0–100%, so either side can be
+  collapsed fully — all-preview or all-editor; the 6px splitter stays
+  grabbable at the edge). During drag the preview iframe gets
+  `pointer-events:none` so it doesn't swallow mousemove. Works in both row
+  (desktop) and column (mobile) layouts via `flex-direction` check. The panes
+  have `min-width:0` so the collapse is not blocked.
+- **Maximize/fullscreen**: a `.tde-maximize` icon button (top-right of the
+  toolbar) toggles `this.requestFullscreen()` / `document.exitFullscreen()` on
+  the widget element; `:fullscreen` CSS makes the widget fill the viewport
+  with the body flexing to fill. `fullscreenchange` swaps the icon
+  (ICON_MAXIMIZE ↔ ICON_MINIMIZE). Note: the embedded preview webview blocks
+  the Fullscreen API ("Permissions check failed") — verify this feature in a
+  real browser tab, not the preview tool.
+- **State**: user edits are saved to `sessionStorage` keyed by the resolved
+  start-file URL on each Run. Reset (with confirm) restores the starter code.
+- **Lazy init** via IntersectionObserver; multiple widgets per page work.
+- The editor pane stays light in both site color schemes (CodeMirror's
+  default highlight colors are light-background); the frame chrome follows
+  the Material CSS variables.
 
-```toml
-[project]
-extra_javascript = ["assets/live-editor/live-editor.js"]
-extra_css = ["assets/live-editor/live-editor.css"]
-```
+## Exercise code file conventions
 
-  If Zensical lacks these keys, fall back to a theme template override or an
-  inline `<script type="module" src=…>` in each page (md_in_html allows it).
-- The JS must be an ES module, idempotent (define the custom element once),
-  and lazy: only initialize editors when scrolled into view
-  (`IntersectionObserver`), since a page may embed several.
-- Respect the Material light/dark palette: read
-  `[data-md-color-scheme]` / Zensical's equivalent attribute and pick the
-  CodeMirror theme accordingly.
+- One directory per exercise: `docs/workshops/foss4g2026/code/<name>/{start.ts,answer.ts}`.
+- Files start with `import type { Map } from 'maplibre-gl'; ... declare const map: Map;`
+  so they type-read correctly while running as plain stripped TS.
+- Anything calling Terra Draw methods that require a started instance
+  (`canUndo()` etc.) must run after `draw.start()` inside `map.once('load')`
+  — calling before throws "Terra Draw is not enabled".
+- Keep code copy-pastable into `template/` (SvelteKit): same variable names,
+  DOM helpers replaced by sidebar markup there.
 
-## Failure modes to handle
+## Known limitations / QA notes
 
-- CDN unreachable (venue Wi-Fi): show a clear message in the preview pane and
-  point to the plain code blocks + local template path.
-- Infinite loops / runaway code: iframe is sandboxed and recreated per Run, so
-  a stuck iframe is discarded on next Run; add a "Reload preview" button.
-- Basemap: use a keyless style (e.g. demotiles or the style already used in
-  2025 exercises) — no API keys in docs.
-
-## Acceptance checklist
-
-- [ ] One `<terra-draw-editor>` renders and runs on a scratch page.
-- [ ] Two widgets on one page don't conflict.
-- [ ] Answer tab shows solution and its preview.
-- [ ] Reset and Copy-answer work with confirmation.
-- [ ] Dark mode readable.
-- [ ] Built site (`uv run zensical build`) serves widget correctly from `site/`.
+- The preview needs internet for the map libraries (editor itself is
+  self-hosted). fetchText() rejects HTML responses so bad embed paths fail
+  with "Not a code file" instead of a confusing TS parse error.
+- `zensical serve` live-reloads pages on rebuild, which resets widget tab
+  state (sessionStorage keeps the code).
+- Verified working in Chrome (2026-07): exercises 1–7, plugin page,
+  getting-started demo embed.
