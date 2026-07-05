@@ -9,14 +9,13 @@ This workshop example codes and template are available at [watergis/terradraw-wo
 - Install dependencies
 
 ```bash
-pipenv install
-pipenv shell
+uv sync
 ```
 
 - Launch mkdocs locally
 
 ```bash
-mkdocs serve
+uv run mkdocs serve
 ```
 
 Open http://localhost:8000/
@@ -24,5 +23,5 @@ Open http://localhost:8000/
 ## Build
 
 ```bash
-mkdocs build
+uv run mkdocs build
 ```
