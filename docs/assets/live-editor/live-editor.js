@@ -165,9 +165,9 @@ class TerraDrawEditor extends HTMLElement {
         <div class="tde-splitter" role="separator" aria-orientation="vertical" title="Drag to resize"></div>
         <div class="tde-preview">
           <div class="tde-frame-host"></div>
-          <pre class="tde-console" hidden></pre>
         </div>
-      </div>`;
+      </div>
+      <pre class="tde-console" hidden aria-live="polite"></pre>`;
 
     this.querySelector('.tde-run').addEventListener('click', () => this.run());
     this.querySelector('.tde-reset').addEventListener('click', () => this.reset());
@@ -238,11 +238,11 @@ class TerraDrawEditor extends HTMLElement {
   }
 
   applyTabVisibility() {
-    const isAnswer = this.activeTab === 'answer' && this.answerView;
-    const exercisePane = this.querySelector('.tde-editor-pane[data-pane="exercise"]');
-    const answerPane = this.querySelector('.tde-editor-pane[data-pane="answer"]');
-    exercisePane.classList.toggle('tde-hidden', !!isAnswer);
-    answerPane.classList.toggle('tde-hidden', !isAnswer);
+    this.querySelectorAll('.tde-editor-pane').forEach((pane) => {
+      const paneName = pane.dataset.pane;
+      const shouldShow = paneName === this.activeTab && (paneName !== 'answer' || !!this.answerView);
+      pane.classList.toggle('tde-hidden', !shouldShow);
+    });
   }
 
   currentCode() {
@@ -304,9 +304,12 @@ class TerraDrawEditor extends HTMLElement {
         } else {
           pct = ((point.clientX - rect.left) / rect.width) * 100;
         }
-        // Allow collapsing either side fully (0% = all preview,
-        // 100% = all editor). The 6px splitter stays grabbable at the edge.
-        pct = Math.min(100, Math.max(0, pct));
+        // Keep at least the splitter width available on both sides so the
+        // handle never gets pushed outside the container.
+        const splitterSizePx = splitter.getBoundingClientRect()[column ? 'height' : 'width'] || 6;
+        const axisSizePx = column ? rect.height : rect.width;
+        const edgePct = axisSizePx > 0 ? (splitterSizePx / axisSizePx) * 100 : 0;
+        pct = Math.min(100 - edgePct, Math.max(edgePct, pct));
         editor.style.flex = `0 0 ${pct}%`;
         preview.style.flex = '1 1 auto';
       };
@@ -427,6 +430,7 @@ class TerraDrawEditor extends HTMLElement {
   }
 
   appendConsole(level, text) {
+    if (level !== 'error') return;
     const consoleEl = this.querySelector('.tde-console');
     const line = document.createElement('span');
     line.className = `tde-console-${level}`;

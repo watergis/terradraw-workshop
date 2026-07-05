@@ -136,9 +136,29 @@ terra-draw-editor.tde:fullscreen .tde-body {
 
 /* Draggable divider between editor and preview */
 .tde-splitter {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex: 0 0 6px;
   cursor: col-resize;
-  background: var(--md-default-fg-color--lightest, #ddd);
+  background-color: var(--md-default-fg-color--lightest, #ddd);
+  /* Always-visible rails make it obvious this divider is draggable. */
+  background-image:
+    linear-gradient(
+      to right,
+      transparent calc(50% - 2px),
+      rgba(0, 0, 0, 0.25) calc(50% - 2px),
+      rgba(0, 0, 0, 0.25) calc(50% - 1px),
+      transparent calc(50% - 1px)
+    ),
+    linear-gradient(
+      to right,
+      transparent calc(50% + 1px),
+      rgba(0, 0, 0, 0.25) calc(50% + 1px),
+      rgba(0, 0, 0, 0.25) calc(50% + 2px),
+      transparent calc(50% + 2px)
+    );
   touch-action: none;
 }
 
@@ -167,13 +187,18 @@ terra-draw-editor.tde:fullscreen .tde-body {
 
 .tde-console {
   margin: 0;
-  padding: 6px 8px;
-  max-height: 30%;
+  padding: 8px;
+  max-height: 160px;
   overflow: auto;
+  border-top: 1px solid var(--md-default-fg-color--lightest, #ddd);
   background: #1e1e1e;
   color: #ddd;
   font-size: 0.65rem;
   white-space: pre-wrap;
+}
+
+.tde-console[hidden] {
+  display: none !important;
 }
 
 .tde-console-error {
@@ -204,5 +229,21 @@ terra-draw-editor.tde:fullscreen .tde-body {
   .tde-splitter {
     flex-basis: 6px;
     cursor: row-resize;
+    background-image:
+      linear-gradient(
+        to bottom,
+        transparent calc(50% - 2px),
+        rgba(0, 0, 0, 0.25) calc(50% - 2px),
+        rgba(0, 0, 0, 0.25) calc(50% - 1px),
+        transparent calc(50% - 1px)
+      ),
+      linear-gradient(
+        to bottom,
+        transparent calc(50% + 1px),
+        rgba(0, 0, 0, 0.25) calc(50% + 1px),
+        rgba(0, 0, 0, 0.25) calc(50% + 2px),
+        transparent calc(50% + 2px)
+      );
   }
+
 }
