@@ -12,10 +12,10 @@ This workshop example codes and template are available at [watergis/terradraw-wo
 uv sync
 ```
 
-- Launch mkdocs locally
+- Launch Zensical locally
 
 ```bash
-uv run mkdocs serve
+uv run zensical serve
 ```
 
 Open http://localhost:8000/
@@ -23,5 +23,5 @@ Open http://localhost:8000/
 ## Build
 
 ```bash
-uv run mkdocs build
+uv run zensical build
 ```
