@@ -89,4 +89,4 @@ The GitHub repository is at [watergis/maplibre-gl-terradraw](https://github.com/
 
 Finally, let's see how the very same Terra Draw code works with other mapping libraries.
 
-[Continue to Other mapping libraries](./other-libraries.md)
+[Continue to Other mapping libraries](./other-libraries/index.md)

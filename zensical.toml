@@ -37,7 +37,14 @@ nav = [
         { "Exercise 7 Undo / Redo" = "workshops/foss4g2026/advanced/exercise-7.md" },
       ] },
       { "Maplibre Terra Draw plugin" = "workshops/foss4g2026/maplibre-gl-terradraw.md" },
-      { "Other mapping libraries" = "workshops/foss4g2026/other-libraries.md" },
+      { "Other mapping libraries" = [
+        "workshops/foss4g2026/other-libraries/index.md",
+        { "Leaflet" = "workshops/foss4g2026/other-libraries/leaflet.md" },
+        { "OpenLayers" = "workshops/foss4g2026/other-libraries/openlayers.md" },
+        { "Mapbox GL JS" = "workshops/foss4g2026/other-libraries/mapbox.md" },
+        { "Google Maps" = "workshops/foss4g2026/other-libraries/google-maps.md" },
+        { "ArcGIS Maps SDK" = "workshops/foss4g2026/other-libraries/arcgis.md" },
+      ] },
       { "Q&A" = "workshops/foss4g2026/support.md" },
     ] },
     { "FOSS4G 2025 Auckland" = [

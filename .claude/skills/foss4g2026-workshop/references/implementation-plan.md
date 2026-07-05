@@ -109,3 +109,11 @@ Nav entry is added to `zensical.toml` under `Workshops`, parallel to
   - This year has no intro talk by James, but we can do intro slides in the first 15 minutes.
 - Which stretch features (marker mode, dashed lines, freehand smoothing) make
   the cut for a 3-hour session vs. appendix.
+
+## Phase 7 — Other mapping libraries section (added 2026-07-05)
+
+One page per library (Leaflet migration exercise + OpenLayers / Mapbox /
+Google Maps / ArcGIS completed examples) with per-library live-editor
+environments and build-time API-key injection. Implemented — see
+[other-libraries-plan.md](other-libraries-plan.md) for the full plan and
+status.

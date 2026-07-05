@@ -6,13 +6,22 @@
  *   <terra-draw-editor
  *     start="./code/exercise-1/start.ts"
  *     answer="./code/exercise-1/answer.ts"
+ *     lib="maplibre"
  *     height="480">
  *   </terra-draw-editor>
  *
  * Left pane: editable TypeScript (CodeMirror 6). Right pane: sandboxed iframe
- * running the code against a MapLibre map. Tabs switch between the exercise
- * starter code and the read-only answer. TypeScript is stripped in the
- * browser with Sucrase — no type checking, no build step.
+ * running the code against a map. Tabs switch between the exercise starter
+ * code and the read-only answer. TypeScript is stripped in the browser with
+ * Sucrase — no type checking, no build step.
+ *
+ * Attributes:
+ *   - lib (optional, default "maplibre"): which mapping-library environment
+ *     the preview iframe provides — one of the LIBS keys below. Exactly one
+ *     library per widget instance; environments are never mixed.
+ *   - boilerplate="none" (optional): skip the MapLibre map boilerplate; the
+ *     user code creates its own map into the `#map` div. Used by the
+ *     "Other mapping libraries" pages where map creation is the lesson.
  *
  * All external dependency versions are pinned here, in one place.
  */
@@ -22,26 +31,89 @@ const PINS = {
   terraDraw: '1.31.2',
   adapter: '1.4.1', // terra-draw-maplibre-gl-adapter
   plugin: '1.14.3', // @watergis/maplibre-gl-terradraw
+  leaflet: '1.9.4',
+  leafletAdapter: '1.3.0',
+  openlayers: '10.9.0', // ol
+  openlayersAdapter: '1.3.0',
+  mapbox: '3.25.0', // mapbox-gl
+  mapboxAdapter: '1.4.0',
+  googleLoader: '2.1.1', // @googlemaps/js-api-loader
+  googleAdapter: '1.6.1',
+  arcgis: '4.33', // js.arcgis.com ESM CDN version
+  arcgisAdapter: '1.3.0',
   sucrase: '3.35.1',
   codemirror: '6.0.2',
   langJavascript: '6.2.5'
 };
 
-// maplibre-gl only ships a UMD build, so it comes from esm.sh which adds
-// named ESM exports. The others ship real ESM builds used directly from
-// unpkg; their bare imports ('terra-draw', 'maplibre-gl') resolve through
-// this same import map, so all modules share single instances.
-const IMPORT_MAP = {
-  imports: {
-    'maplibre-gl': `https://esm.sh/maplibre-gl@${PINS.maplibre}`,
-    'terra-draw': `https://unpkg.com/terra-draw@${PINS.terraDraw}/dist/terra-draw.modern.js`,
-    'terra-draw-maplibre-gl-adapter': `https://unpkg.com/terra-draw-maplibre-gl-adapter@${PINS.adapter}/dist/terra-draw-maplibre-gl-adapter.modern.js`,
-    '@watergis/maplibre-gl-terradraw': `https://unpkg.com/@watergis/maplibre-gl-terradraw@${PINS.plugin}/dist/maplibre-gl-terradraw.es.js`
+// Shared by every environment so all adapters resolve the same terra-draw
+// instance through the import map.
+const TERRA_DRAW_URL = `https://unpkg.com/terra-draw@${PINS.terraDraw}/dist/terra-draw.modern.js`;
+
+// One preview environment per mapping library: import-map entries + CSS.
+// UMD-only packages (maplibre-gl, leaflet, mapbox-gl) come from esm.sh which
+// adds named ESM exports (jsdelivr `+esm` does NOT — it breaks named imports
+// like LngLat). The Terra Draw adapters ship real ESM builds used directly
+// from unpkg; their bare imports ('terra-draw', 'leaflet') resolve through
+// the same import map, so all modules share single instances.
+// `keys` lists the API-key placeholders (see keys.js) the environment needs.
+const LIBS = {
+  maplibre: {
+    imports: {
+      'maplibre-gl': `https://esm.sh/maplibre-gl@${PINS.maplibre}`,
+      'terra-draw-maplibre-gl-adapter': `https://unpkg.com/terra-draw-maplibre-gl-adapter@${PINS.adapter}/dist/terra-draw-maplibre-gl-adapter.modern.js`,
+      '@watergis/maplibre-gl-terradraw': `https://unpkg.com/@watergis/maplibre-gl-terradraw@${PINS.plugin}/dist/maplibre-gl-terradraw.es.js`
+    },
+    css: [
+      `https://unpkg.com/maplibre-gl@${PINS.maplibre}/dist/maplibre-gl.css`,
+      `https://unpkg.com/@watergis/maplibre-gl-terradraw@${PINS.plugin}/dist/maplibre-gl-terradraw.css`
+    ],
+    keys: []
+  },
+  leaflet: {
+    imports: {
+      leaflet: `https://esm.sh/leaflet@${PINS.leaflet}`,
+      'terra-draw-leaflet-adapter': `https://unpkg.com/terra-draw-leaflet-adapter@${PINS.leafletAdapter}/dist/terra-draw-leaflet-adapter.modern.js`
+    },
+    css: [`https://unpkg.com/leaflet@${PINS.leaflet}/dist/leaflet.css`],
+    keys: []
+  },
+  openlayers: {
+    imports: {
+      // Trailing-slash prefix so `import Map from 'ol/Map.js'` resolves too.
+      ol: `https://esm.sh/ol@${PINS.openlayers}`,
+      'ol/': `https://esm.sh/ol@${PINS.openlayers}/`,
+      'terra-draw-openlayers-adapter': `https://unpkg.com/terra-draw-openlayers-adapter@${PINS.openlayersAdapter}/dist/terra-draw-openlayers-adapter.modern.js`
+    },
+    css: [`https://unpkg.com/ol@${PINS.openlayers}/ol.css`],
+    keys: []
+  },
+  mapbox: {
+    imports: {
+      'mapbox-gl': `https://esm.sh/mapbox-gl@${PINS.mapbox}`,
+      'terra-draw-mapbox-gl-adapter': `https://unpkg.com/terra-draw-mapbox-gl-adapter@${PINS.mapboxAdapter}/dist/terra-draw-mapbox-gl-adapter.modern.js`
+    },
+    css: [`https://unpkg.com/mapbox-gl@${PINS.mapbox}/dist/mapbox-gl.css`],
+    keys: ['MAPBOX_ACCESS_TOKEN']
+  },
+  google: {
+    imports: {
+      '@googlemaps/js-api-loader': `https://esm.sh/@googlemaps/js-api-loader@${PINS.googleLoader}`,
+      'terra-draw-google-maps-adapter': `https://unpkg.com/terra-draw-google-maps-adapter@${PINS.googleAdapter}/dist/terra-draw-google-maps-adapter.modern.js`
+    },
+    css: [],
+    keys: ['GOOGLE_MAPS_API_KEY']
+  },
+  arcgis: {
+    imports: {
+      // Official ArcGIS ESM CDN; prefix so `@arcgis/core/Map.js` etc. resolve.
+      '@arcgis/core/': `https://js.arcgis.com/${PINS.arcgis}/@arcgis/core/`,
+      'terra-draw-arcgis-adapter': `https://unpkg.com/terra-draw-arcgis-adapter@${PINS.arcgisAdapter}/dist/terra-draw-arcgis-adapter.modern.js`
+    },
+    css: [`https://js.arcgis.com/${PINS.arcgis}/@arcgis/core/assets/esri/themes/light/main.css`],
+    keys: []
   }
 };
-
-const MAPLIBRE_CSS = `https://unpkg.com/maplibre-gl@${PINS.maplibre}/dist/maplibre-gl.css`;
-const PLUGIN_CSS = `https://unpkg.com/@watergis/maplibre-gl-terradraw@${PINS.plugin}/dist/maplibre-gl-terradraw.css`;
 
 // FOSS4G 2026 Hiroshima
 const MAP_CENTER = [132.4553, 34.3966];
@@ -74,6 +146,22 @@ window.map = map;
 /* ------------------------------------------------------------------ */
 
 let toolingPromise = null;
+let keysPromise = null;
+
+/**
+ * API keys baked at build time: `keys.js` is generated from environment
+ * variables (Cloudflare Pages) or `.env` (local) by scripts/generate-keys.mjs
+ * and is gitignored. Missing file → no keys, key-using examples show a
+ * friendly message.
+ */
+function loadKeys() {
+  if (!keysPromise) {
+    keysPromise = import(new URL('./keys.js', import.meta.url).href)
+      .then((mod) => mod.default || {})
+      .catch(() => ({}));
+  }
+  return keysPromise;
+}
 
 function loadTooling() {
   if (!toolingPromise) {
@@ -141,6 +229,25 @@ class TerraDrawEditor extends HTMLElement {
     return `terra-draw-editor:${this.startUrl}`;
   }
 
+  // Baseline the saved edits were made against. If the page's starter code
+  // changes (e.g. an exercise is rewritten), stale saved edits keyed by the
+  // same URL are discarded instead of resurrected.
+  get baselineKey() {
+    return `terra-draw-editor:baseline:${this.startUrl}`;
+  }
+
+  get libConfig() {
+    const lib = this.getAttribute('lib') || 'maplibre';
+    const config = LIBS[lib];
+    if (!config) throw new Error(`Unknown lib="${lib}" (expected one of: ${Object.keys(LIBS).join(', ')})`);
+    return config;
+  }
+
+  get useBoilerplate() {
+    // The MapLibre map boilerplate only makes sense for the default env.
+    return this.getAttribute('boilerplate') !== 'none' && (this.getAttribute('lib') || 'maplibre') === 'maplibre';
+  }
+
   renderShell() {
     const height = this.getAttribute('height') || '480';
     this.classList.add('tde');
@@ -186,12 +293,14 @@ class TerraDrawEditor extends HTMLElement {
   }
 
   async initialize() {
-    const [tooling, startCode, answerCode] = await Promise.all([
+    const [tooling, keys, startCode, answerCode] = await Promise.all([
       loadTooling(),
+      loadKeys(),
       fetchText(this.startUrl),
       this.answerUrl ? fetchText(this.answerUrl) : Promise.resolve(null)
     ]);
     this.tooling = tooling;
+    this.keys = keys;
     this.startCode = startCode.trimEnd();
     this.answerCode = answerCode ? answerCode.trimEnd() : null;
 
@@ -199,7 +308,14 @@ class TerraDrawEditor extends HTMLElement {
     const answerPane = this.querySelector('.tde-editor-pane[data-pane="answer"]');
     exercisePane.innerHTML = '';
 
-    const saved = sessionStorage.getItem(this.storageKey);
+    // Only restore saved edits if they were based on the current starter
+    // code; otherwise the exercise has changed and the old code is stale.
+    let saved = sessionStorage.getItem(this.storageKey);
+    if (saved !== null && sessionStorage.getItem(this.baselineKey) !== this.startCode) {
+      sessionStorage.removeItem(this.storageKey);
+      sessionStorage.removeItem(this.baselineKey);
+      saved = null;
+    }
     const extensions = [
       tooling.basicSetup,
       tooling.javascript({ typescript: true }),
@@ -336,6 +452,7 @@ class TerraDrawEditor extends HTMLElement {
     this.clearConsole();
     if (this.activeTab === 'exercise') {
       sessionStorage.setItem(this.storageKey, this.exerciseView.state.doc.toString());
+      sessionStorage.setItem(this.baselineKey, this.startCode);
     }
     let js;
     try {
@@ -347,7 +464,31 @@ class TerraDrawEditor extends HTMLElement {
       this.appendConsole('error', `TypeScript error: ${err.message}`);
       return;
     }
+    js = this.injectKeys(js);
     this.renderPreview(js);
+  }
+
+  /**
+   * Replace `__<NAME>__` API-key placeholders with the build-time keys.
+   * Missing keys get an explanatory console message instead of a raw
+   * provider error, and are replaced with an empty string.
+   */
+  injectKeys(js) {
+    for (const name of this.libConfig.keys) {
+      const placeholder = `__${name}__`;
+      if (!js.includes(placeholder)) continue;
+      const value = (this.keys && this.keys[name]) || '';
+      if (!value) {
+        this.appendConsole(
+          'error',
+          `No ${name} was provided at build time, so the map below cannot load. ` +
+            `To run this example locally, set ${name} in .env and rebuild the site ` +
+            `(see the instructions on this page).`
+        );
+      }
+      js = js.replaceAll(placeholder, value);
+    }
+    return js;
   }
 
   renderPreview(userJs) {
@@ -374,12 +515,19 @@ class TerraDrawEditor extends HTMLElement {
     `;
     // Guard against user code accidentally closing our script tag.
     const safeUserJs = userJs.replaceAll('</script', '<\\/script');
+    const config = this.libConfig;
+    const importMap = { imports: { 'terra-draw': TERRA_DRAW_URL, ...config.imports } };
+    const cssLinks = config.css
+      .map((href) => `<link rel="stylesheet" href="${href}">`)
+      .join('\n');
+    const boilerplate = this.useBoilerplate
+      ? `<script type="module">${MAP_BOILERPLATE}</script>`
+      : '';
     return `<!doctype html>
 <html>
 <head>
 <meta charset="utf-8">
-<link rel="stylesheet" href="${MAPLIBRE_CSS}">
-<link rel="stylesheet" href="${PLUGIN_CSS}">
+${cssLinks}
 <style>
   html, body { margin: 0; height: 100%; }
   .tde-wrap { display: flex; height: 100%; }
@@ -388,7 +536,7 @@ class TerraDrawEditor extends HTMLElement {
   #sidebar button { padding: 6px 8px; cursor: pointer; }
   #map { flex: 1; }
 </style>
-<script type="importmap">${JSON.stringify(IMPORT_MAP)}</script>
+<script type="importmap">${JSON.stringify(importMap)}</script>
 <script>${consoleHook}</script>
 </head>
 <body>
@@ -396,7 +544,7 @@ class TerraDrawEditor extends HTMLElement {
   <div id="sidebar"></div>
   <div id="map"></div>
 </div>
-<script type="module">${MAP_BOILERPLATE}</script>
+${boilerplate}
 <script type="module">${safeUserJs}</script>
 </body>
 </html>`;
@@ -407,6 +555,7 @@ class TerraDrawEditor extends HTMLElement {
     if (!window.confirm('Discard your changes and restore the starter code?')) return;
     this.setExerciseDoc(this.startCode);
     sessionStorage.removeItem(this.storageKey);
+    sessionStorage.removeItem(this.baselineKey);
     this.run();
   }
 

@@ -40,7 +40,7 @@ The workshop runs for 3 hours with a 15-minute break after the first hour.
 |15:15-15:35| 20 min | [Terra Draw Basics - Exercise 3](./basics/exercise-3.md) |
 |15:35-16:30| 55 min | [Advanced Features - Exercise 4 to 7](./advanced/index.md) |
 |16:30-16:45| 15 min | [maplibre-gl-terradraw introduction](./maplibre-gl-terradraw.md) |
-|16:45-17:00| 15 min | [Other mapping libraries](./other-libraries.md) & Q&A |
+|16:45-17:00| 15 min | [Other mapping libraries](./other-libraries/index.md) & Q&A |
 
 ### Workshop materials
 
