@@ -1,0 +1,118 @@
+[project]
+site_name = "Terra Draw Tutorials"
+site_description = "This is tutorial documentation for Terra Draw drawing library for all mapping applications."
+
+docs_dir = "docs"
+site_dir = "site"
+
+# Repository
+repo_name = "JamesLMilner/terra-draw"
+repo_url = "https://github.com/JamesLMilner/terra-draw"
+edit_uri = "https://github.com/watergis/terradraw-workshop/blob/main/docs"
+
+nav = [
+  { "Home" = "index.md" },
+  { "Workshops" = [
+    "workshops/index.md",
+    { "FOSS4G 2025 Auckland" = [
+      { "FOSS4G 2025 Workshop" = "workshops/foss4g2025/index.md" },
+      { "Getting started" = "workshops/foss4g2025/getting-started.md" },
+      { "Terra Draw Basics" = [
+        "workshops/foss4g2025/basics/index.md",
+        { "Exercise 1 Without UI" = "workshops/foss4g2025/basics/exercise-1.md" },
+        { "Exercise 2 With UI" = "workshops/foss4g2025/basics/exercise-2.md" },
+        { "Exercise 3 With Select mode" = "workshops/foss4g2025/basics/exercise-3.md" },
+      ] },
+      { "Advanced Features" = [
+        "workshops/foss4g2025/advanced/index.md",
+        { "Exercise 4 Custom Styling" = "workshops/foss4g2025/advanced/exercise-4.md" },
+        { "Exercise 5 Event Handling" = "workshops/foss4g2025/advanced/exercise-5.md" },
+        { "Exercise 6  Data Management" = "workshops/foss4g2025/advanced/exercise-6.md" },
+      ] },
+      { "Leaflet intergartion" = "workshops/foss4g2025/leaflet.md" },
+      { "Maplibre Terra Draw plugin" = "workshops/foss4g2025/maplibre-gl-terradraw.md" },
+      { "Q&A" = "workshops/foss4g2025/support.md" },
+    ] },
+  ] },
+]
+
+# ----------------------------------------------------------------------------
+# Theme options (modern variant is Zensical's default)
+# ----------------------------------------------------------------------------
+[project.theme]
+logo = "assets/images/favicon.png"
+favicon = "assets/images/favicon.ico"
+language = "en"
+
+features = [
+  "announce.dismiss",
+  "content.action.edit",
+  "content.action.view",
+  "content.code.annotate",
+  "content.code.copy",
+  "content.tooltips",
+  "navigation.footer",
+  "navigation.indexes",
+  "navigation.sections",
+  "navigation.top",
+  "navigation.tracking",
+  "search.highlight",
+  "toc.follow",
+]
+
+# Color schemes with a light/dark toggle
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+primary = "indigo"
+accent = "indigo"
+toggle.icon = "octicons/moon-24"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+primary = "blue grey"
+accent = "light blue"
+toggle.icon = "octicons/sun-24"
+toggle.name = "Switch to light mode"
+
+# ----------------------------------------------------------------------------
+# Markdown extensions
+# These are chosen to be a superset of Pandoc's Markdown.
+# https://pandoc.org/MANUAL.html
+# ----------------------------------------------------------------------------
+[project.markdown_extensions.admonition]
+[project.markdown_extensions.attr_list]
+[project.markdown_extensions.md_in_html]
+[project.markdown_extensions.def_list]
+[project.markdown_extensions.footnotes]
+[project.markdown_extensions.toc]
+permalink = true
+
+[project.markdown_extensions.pymdownx.arithmatex]
+[project.markdown_extensions.pymdownx.betterem]
+[project.markdown_extensions.pymdownx.caret]
+insert = false
+[project.markdown_extensions.pymdownx.details]
+[project.markdown_extensions.pymdownx.emoji]
+emoji_generator = "zensical.extensions.emoji.to_svg"
+emoji_index = "zensical.extensions.emoji.twemoji"
+[project.markdown_extensions.pymdownx.escapeall]
+hardbreak = true
+nbsp = true
+[project.markdown_extensions.pymdownx.magiclink]
+hide_protocol = true
+repo_url_shortener = true
+[project.markdown_extensions.pymdownx.smartsymbols]
+[project.markdown_extensions.pymdownx.tilde]
+[project.markdown_extensions.pymdownx.tasklist]
+custom_checkbox = true
+
+# Code highlighting (Zensical's native highlight stack, replacing codehilite)
+[project.markdown_extensions.pymdownx.highlight]
+anchor_linenums = true
+line_spans = "__span"
+pygments_lang_class = true
+[project.markdown_extensions.pymdownx.inlinehilite]
+[project.markdown_extensions.pymdownx.superfences]
