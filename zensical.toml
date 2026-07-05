@@ -10,10 +10,36 @@ repo_name = "JamesLMilner/terra-draw"
 repo_url = "https://github.com/JamesLMilner/terra-draw"
 edit_uri = "https://github.com/watergis/terradraw-workshop/blob/main/docs"
 
+# Live editor widget for workshop exercises
+extra_javascript = [
+  { path = "assets/live-editor/live-editor.js", type = "module" },
+]
+extra_css = ["assets/live-editor/live-editor.css"]
+
 nav = [
   { "Home" = "index.md" },
   { "Workshops" = [
     "workshops/index.md",
+    { "FOSS4G Hiroshima 2026" = [
+      { "FOSS4G 2026 Workshop" = "workshops/foss4g2026/index.md" },
+      { "Getting started" = "workshops/foss4g2026/getting-started.md" },
+      { "Terra Draw Basics" = [
+        "workshops/foss4g2026/basics/index.md",
+        { "Exercise 1 Without UI" = "workshops/foss4g2026/basics/exercise-1.md" },
+        { "Exercise 2 With UI" = "workshops/foss4g2026/basics/exercise-2.md" },
+        { "Exercise 3 With Select mode" = "workshops/foss4g2026/basics/exercise-3.md" },
+      ] },
+      { "Advanced Features" = [
+        "workshops/foss4g2026/advanced/index.md",
+        { "Exercise 4 Custom Styling" = "workshops/foss4g2026/advanced/exercise-4.md" },
+        { "Exercise 5 Event Handling" = "workshops/foss4g2026/advanced/exercise-5.md" },
+        { "Exercise 6 Data Management" = "workshops/foss4g2026/advanced/exercise-6.md" },
+        { "Exercise 7 Undo / Redo" = "workshops/foss4g2026/advanced/exercise-7.md" },
+      ] },
+      { "Maplibre Terra Draw plugin" = "workshops/foss4g2026/maplibre-gl-terradraw.md" },
+      { "Other mapping libraries" = "workshops/foss4g2026/other-libraries.md" },
+      { "Q&A" = "workshops/foss4g2026/support.md" },
+    ] },
     { "FOSS4G 2025 Auckland" = [
       { "FOSS4G 2025 Workshop" = "workshops/foss4g2025/index.md" },
       { "Getting started" = "workshops/foss4g2025/getting-started.md" },

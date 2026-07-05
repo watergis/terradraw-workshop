@@ -1,0 +1,249 @@
+/* Styles for the <terra-draw-editor> live editor widget. */
+
+terra-draw-editor.tde {
+  display: block;
+  margin: 1em 0;
+  border: 1px solid var(--md-default-fg-color--lightest, #ddd);
+  border-radius: 6px;
+  overflow: hidden;
+  font-size: 0.75rem;
+}
+
+.tde-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 8px;
+  background: var(--md-code-bg-color, #f5f5f5);
+  border-bottom: 1px solid var(--md-default-fg-color--lightest, #ddd);
+}
+
+.tde-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.tde-tab {
+  padding: 4px 14px;
+  border: none;
+  border-radius: 4px 4px 0 0;
+  background: transparent;
+  color: var(--md-default-fg-color--light, #555);
+  cursor: pointer;
+  font: inherit;
+}
+
+.tde-tab-active {
+  background: var(--md-default-bg-color, #fff);
+  color: var(--md-typeset-color, #000);
+  font-weight: 700;
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.tde-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.tde-btn {
+  padding: 4px 12px;
+  border: 1px solid var(--md-default-fg-color--lighter, #bbb);
+  border-radius: 4px;
+  background: var(--md-default-bg-color, #fff);
+  color: var(--md-typeset-color, #000);
+  cursor: pointer;
+  font: inherit;
+}
+
+.tde-btn:hover {
+  border-color: var(--md-accent-fg-color, #526cfe);
+  color: var(--md-accent-fg-color, #526cfe);
+}
+
+.tde-run {
+  border-color: var(--md-primary-fg-color, #3f51b5);
+  background: var(--md-primary-fg-color, #3f51b5);
+  color: var(--md-primary-bg-color, #fff);
+}
+
+.tde-run:hover {
+  color: var(--md-primary-bg-color, #fff);
+  opacity: 0.85;
+}
+
+.tde-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 6px;
+}
+
+.tde-icon-btn svg {
+  display: block;
+}
+
+.tde-body {
+  display: flex;
+}
+
+/* Fullscreen: the whole widget fills the screen so there is more room to
+   edit code. The toolbar stays at the top; the body takes the rest. */
+terra-draw-editor.tde:fullscreen {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  background: var(--md-default-bg-color, #fff);
+}
+
+terra-draw-editor.tde:fullscreen .tde-body {
+  height: auto !important;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.tde-editor {
+  flex: 1 1 50%;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  /* Keep the editor light in both site color schemes: the default
+     CodeMirror highlight colors are designed for light backgrounds. */
+  background: #fff;
+}
+
+/* One pane per tab (exercise / answer); only the active one is shown. */
+.tde-editor-pane {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
+
+.tde-editor-pane.tde-hidden {
+  display: none !important;
+}
+
+.tde-editor-pane .cm-editor {
+  height: 100%;
+  font-size: 0.7rem;
+}
+
+.tde-editor-pane .cm-editor.cm-focused {
+  outline: none;
+}
+
+/* Draggable divider between editor and preview */
+.tde-splitter {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 6px;
+  cursor: col-resize;
+  background-color: var(--md-default-fg-color--lightest, #ddd);
+  /* Always-visible rails make it obvious this divider is draggable. */
+  background-image:
+    linear-gradient(
+      to right,
+      transparent calc(50% - 2px),
+      rgba(0, 0, 0, 0.25) calc(50% - 2px),
+      rgba(0, 0, 0, 0.25) calc(50% - 1px),
+      transparent calc(50% - 1px)
+    ),
+    linear-gradient(
+      to right,
+      transparent calc(50% + 1px),
+      rgba(0, 0, 0, 0.25) calc(50% + 1px),
+      rgba(0, 0, 0, 0.25) calc(50% + 2px),
+      transparent calc(50% + 2px)
+    );
+  touch-action: none;
+}
+
+.tde-splitter:hover {
+  background: var(--md-accent-fg-color, #526cfe);
+}
+
+.tde-preview {
+  flex: 1 1 50%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.tde-frame-host {
+  flex: 1;
+  min-height: 0;
+}
+
+.tde-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+.tde-console {
+  margin: 0;
+  padding: 8px;
+  max-height: 160px;
+  overflow: auto;
+  border-top: 1px solid var(--md-default-fg-color--lightest, #ddd);
+  background: #1e1e1e;
+  color: #ddd;
+  font-size: 0.65rem;
+  white-space: pre-wrap;
+}
+
+.tde-console[hidden] {
+  display: none !important;
+}
+
+.tde-console-error {
+  color: #ff6b6b;
+}
+
+.tde-loading,
+.tde-error {
+  padding: 16px;
+  color: var(--md-default-fg-color--light, #555);
+}
+
+.tde-error {
+  color: #c62828;
+}
+
+/* Stack panes vertically on narrow screens */
+@media (max-width: 900px) {
+  .tde-body {
+    flex-direction: column;
+  }
+
+  .tde-editor,
+  .tde-preview {
+    flex: 1 1 50%;
+  }
+
+  .tde-splitter {
+    flex-basis: 6px;
+    cursor: row-resize;
+    background-image:
+      linear-gradient(
+        to bottom,
+        transparent calc(50% - 2px),
+        rgba(0, 0, 0, 0.25) calc(50% - 2px),
+        rgba(0, 0, 0, 0.25) calc(50% - 1px),
+        transparent calc(50% - 1px)
+      ),
+      linear-gradient(
+        to bottom,
+        transparent calc(50% + 1px),
+        rgba(0, 0, 0, 0.25) calc(50% + 1px),
+        rgba(0, 0, 0, 0.25) calc(50% + 2px),
+        transparent calc(50% + 2px)
+      );
+  }
+
+}
