@@ -28,9 +28,9 @@
 
 const PINS = {
   maplibre: '5.24.0',
-  terraDraw: '1.31.2',
+  terraDraw: '1.32.0',
   adapter: '1.4.1', // terra-draw-maplibre-gl-adapter
-  plugin: '1.14.3', // @watergis/maplibre-gl-terradraw
+  plugin: '1.14.4', // @watergis/maplibre-gl-terradraw
   leaflet: '1.9.4',
   leafletAdapter: '1.3.0',
   openlayers: '10.9.0', // ol

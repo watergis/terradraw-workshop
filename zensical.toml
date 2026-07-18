@@ -19,7 +19,6 @@ extra_css = ["assets/live-editor/live-editor.css"]
 nav = [
   { "Home" = "index.md" },
   { "Workshops" = [
-    "workshops/index.md",
     { "FOSS4G Hiroshima 2026" = [
       { "FOSS4G 2026 Workshop" = "workshops/foss4g2026/index.md" },
       { "Getting started" = "workshops/foss4g2026/getting-started.md" },
@@ -67,6 +66,7 @@ nav = [
       { "Q&A" = "workshops/foss4g2025/support.md" },
     ] },
   ] },
+  { "Supporting Terra Draw" = "support.md" },
 ]
 
 # ----------------------------------------------------------------------------
