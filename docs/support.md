@@ -14,11 +14,11 @@ If you would like to support the Terra Draw project, please consider sponsoring 
 
 ### GitHub Sponsors for Terra Draw author directly
 
-<iframe src="https://github.com/sponsors/JamesLMilner/card" title="Sponsor JamesLMilner" height="100" width="600" style="border: 0;"></iframe>
+<iframe src="https://github.com/sponsors/JamesLMilner/card" title="Sponsor JamesLMilner" height="225" width="600" style="border: 0;"></iframe>
 
 ### GitHub Sponsors for maplibre-gl-terradraw author
 
-<iframe src="https://github.com/sponsors/watergis/card" title="Sponsor GIS for Water" height="100" width="600" style="border: 0;"></iframe>
+<iframe src="https://github.com/sponsors/watergis/card" title="Sponsor watergis" height="225" width="600" style="border: 0;"></iframe>
 
 ## Thanks!
 
