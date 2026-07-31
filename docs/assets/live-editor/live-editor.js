@@ -43,7 +43,9 @@ const PINS = {
   arcgisAdapter: '1.3.0',
   sucrase: '3.35.1',
   codemirror: '6.0.2',
-  langJavascript: '6.2.5'
+  langJavascript: '6.2.5',
+  cmLanguage: '6.11.3', // @codemirror/language
+  lezerHighlight: '1.2.3' // @lezer/highlight
 };
 
 // Shared by every environment so all adapters resolve the same terra-draw
@@ -174,6 +176,8 @@ function loadTooling() {
       EditorView: bundle.EditorView,
       basicSetup: bundle.basicSetup,
       javascript: bundle.javascript,
+      syntaxHighlighting: bundle.syntaxHighlighting,
+      classHighlighter: bundle.classHighlighter,
       transform: bundle.transform
     }));
   }
@@ -316,33 +320,38 @@ class TerraDrawEditor extends HTMLElement {
       sessionStorage.removeItem(this.baselineKey);
       saved = null;
     }
-    const extensions = [
+    // Shared by the editable exercise view and the read-only answer view, so
+    // both panes look identical.
+    const baseExtensions = () => [
       tooling.basicSetup,
       tooling.javascript({ typescript: true }),
-      tooling.EditorView.domEventHandlers({
-        keydown: (event) => {
-          if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
-            this.run();
-            return true;
-          }
-          return false;
-        }
-      })
+      // Emit stable `tok-*` class names instead of the generated class names
+      // basicSetup's defaultHighlightStyle uses. This deactivates that
+      // fallback style and lets live-editor.css own every syntax colour,
+      // which is how the editor follows the site's light/dark palette.
+      tooling.syntaxHighlighting(tooling.classHighlighter)
     ];
     this.exerciseView = new tooling.EditorView({
       doc: saved ?? this.startCode,
-      extensions,
+      extensions: [
+        ...baseExtensions(),
+        tooling.EditorView.domEventHandlers({
+          keydown: (event) => {
+            if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+              this.run();
+              return true;
+            }
+            return false;
+          }
+        })
+      ],
       parent: exercisePane
     });
 
     if (this.answerCode !== null) {
       this.answerView = new tooling.EditorView({
         doc: this.answerCode,
-        extensions: [
-          tooling.basicSetup,
-          tooling.javascript({ typescript: true }),
-          tooling.EditorView.editable.of(false)
-        ],
+        extensions: [...baseExtensions(), tooling.EditorView.editable.of(false)],
         parent: answerPane
       });
       this.querySelector('[data-tab="answer"]').hidden = false;

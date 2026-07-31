@@ -76,16 +76,19 @@ top-level page like `maplibre-gl-terradraw.md` use `../code/...`.
   `@codemirror/state` instances ("Unrecognized extension value"). jsdelivr's
   `+esm` build of sucrase is also broken (CJS interop).
 
-  Rebuild the bundle with:
+  The bundle is committed; rebuild it only when the editor needs a new
+  CodeMirror API or a version bump. The build lives in
+  `scripts/editor-bundle/` (outside `docs/`, which Zensical copies verbatim):
 
   ```bash
-  npm install codemirror@6.0.2 @codemirror/lang-javascript@6.2.5 sucrase@3.35.1 esbuild
-  # entry.js:
-  #   export { EditorView, basicSetup } from 'codemirror';
-  #   export { javascript } from '@codemirror/lang-javascript';
-  #   export { transform } from 'sucrase';
-  npx esbuild entry.js --bundle --format=esm --minify --outfile=editor-bundle.js
+  cd scripts/editor-bundle
+  npm install
+  npm run build   # writes docs/assets/live-editor/vendor/editor-bundle.js
   ```
+
+  Its `package.json` versions must stay in sync with the `PINS` object in
+  live-editor.js. `entry.js` exports `EditorView`, `basicSetup`, `javascript`,
+  `syntaxHighlighting`, `classHighlighter` and Sucrase's `transform`.
 
 - **Preview**: sandboxed `<iframe srcdoc>` (`sandbox="allow-scripts"`),
   recreated on every Run. It contains an import map (versions pinned in the
@@ -133,9 +136,31 @@ top-level page like `maplibre-gl-terradraw.md` use `../code/...`.
 - **State**: user edits are saved to `sessionStorage` keyed by the resolved
   start-file URL on each Run. Reset (with confirm) restores the starter code.
 - **Lazy init** via IntersectionObserver; multiple widgets per page work.
-- The editor pane stays light in both site color schemes (CodeMirror's
-  default highlight colors are light-background); the frame chrome follows
-  the Material CSS variables.
+- **Theming**: the editor follows the site's Material palette — VS Code
+  "Light+" under `default`, "Dark+" under `slate`. This is pure CSS, so it
+  switches instantly when the reader clicks the palette toggle; there is no
+  `Compartment`, `MutationObserver` or `matchMedia` in live-editor.js, and
+  nothing should be added.
+
+  How it works: both editor views apply
+  `syntaxHighlighting(classHighlighter)` on top of `basicSetup`. Since
+  basicSetup registers `defaultHighlightStyle` with `fallback: true`, adding a
+  real highlighter deactivates it — tokens then carry stable `tok-keyword` /
+  `tok-string` / `tok-propertyName` class names instead of style-mod's
+  generated `ͼ…` classes, which CSS cannot target.
+
+  Every colour lives in the `--tde-cm-*` custom properties declared on
+  `terra-draw-editor.tde` in live-editor.css, overridden in the
+  `[data-md-color-scheme='slate']` block. The `.cm-*` and `.tok-*` rules are
+  scoped under `.tde-editor-pane .cm-editor` so they outrank CodeMirror's
+  injected base theme without `!important`. **Never hardcode a colour in
+  those rules** — add a variable to both blocks instead. Gotcha: `.cm-button`
+  (search panel) paints a light gradient, so `background-image: none` is
+  required, not just `background-color`.
+
+  Out of scope by design: the preview iframe stays light in both schemes,
+  because the map styles it loads (OpenFreeMap `bright`, ArcGIS
+  `themes/light`) are light-only.
 
 ## Exercise code file conventions
 

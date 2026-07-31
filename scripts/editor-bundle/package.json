@@ -1,0 +1,19 @@
+{
+  "name": "terradraw-workshop-editor-bundle",
+  "private": true,
+  "type": "module",
+  "description": "Builds docs/assets/live-editor/vendor/editor-bundle.js",
+  "scripts": {
+    "build": "esbuild entry.js --bundle --format=esm --minify --outfile=../../docs/assets/live-editor/vendor/editor-bundle.js"
+  },
+  "dependencies": {
+    "@codemirror/lang-javascript": "6.2.5",
+    "@codemirror/language": "6.11.3",
+    "@lezer/highlight": "1.2.3",
+    "codemirror": "6.0.2",
+    "sucrase": "3.35.1"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.10"
+  }
+}

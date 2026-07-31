@@ -208,3 +208,6 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Live editor vendor bundle build (scripts/editor-bundle)
+scripts/editor-bundle/node_modules/
