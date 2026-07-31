@@ -7,6 +7,63 @@ terra-draw-editor.tde {
   border-radius: 6px;
   overflow: hidden;
   font-size: 0.75rem;
+
+  /* Editor theme — VS Code "Light+". The dark counterpart is the
+     [data-md-color-scheme="slate"] block below, so the code pane follows the
+     site's palette toggle with no JavaScript. Syntax colours reach CodeMirror
+     through the `tok-*` classes emitted by classHighlighter (see
+     live-editor.js); never hardcode a colour in the .cm-* rules. */
+  --tde-cm-bg: #ffffff;
+  --tde-cm-fg: #1f1f1f;
+  --tde-cm-gutter-bg: #ffffff;
+  --tde-cm-gutter-fg: #237893;
+  --tde-cm-active-line: #f2f6fc;
+  --tde-cm-active-gutter-fg: #0b216f;
+  --tde-cm-selection: #add6ff;
+  --tde-cm-cursor: #000000;
+  --tde-cm-panel-bg: #f3f3f3;
+  --tde-cm-matching-bracket: rgba(0, 0, 0, 0.18);
+  --tde-cm-keyword: #0000ff;
+  --tde-cm-control: #af00db;
+  --tde-cm-string: #a31515;
+  --tde-cm-comment: #008000;
+  --tde-cm-number: #098658;
+  --tde-cm-type: #267f99;
+  --tde-cm-function: #795e26;
+  --tde-cm-variable: #001080;
+  --tde-cm-property: #0451a5;
+  --tde-cm-operator: #1f1f1f;
+  --tde-cm-regexp: #811f3f;
+  --tde-cm-invalid: #cd3131;
+  /* Divider rails, readable against either pane background. */
+  --tde-rail: rgba(0, 0, 0, 0.25);
+}
+
+/* VS Code "Dark+" for the site's slate palette. */
+[data-md-color-scheme='slate'] terra-draw-editor.tde {
+  --tde-cm-bg: #1e1e1e;
+  --tde-cm-fg: #d4d4d4;
+  --tde-cm-gutter-bg: #1e1e1e;
+  --tde-cm-gutter-fg: #858585;
+  --tde-cm-active-line: #282828;
+  --tde-cm-active-gutter-fg: #c6c6c6;
+  --tde-cm-selection: #264f78;
+  --tde-cm-cursor: #aeafad;
+  --tde-cm-panel-bg: #252526;
+  --tde-cm-matching-bracket: rgba(255, 255, 255, 0.25);
+  --tde-cm-keyword: #569cd6;
+  --tde-cm-control: #c586c0;
+  --tde-cm-string: #ce9178;
+  --tde-cm-comment: #6a9955;
+  --tde-cm-number: #b5cea8;
+  --tde-cm-type: #4ec9b0;
+  --tde-cm-function: #dcdcaa;
+  --tde-cm-variable: #9cdcfe;
+  --tde-cm-property: #9cdcfe;
+  --tde-cm-operator: #d4d4d4;
+  --tde-cm-regexp: #d16969;
+  --tde-cm-invalid: #f14c4c;
+  --tde-rail: rgba(255, 255, 255, 0.4);
 }
 
 .tde-toolbar {
@@ -108,9 +165,7 @@ terra-draw-editor.tde:fullscreen .tde-body {
   min-width: 0;
   min-height: 0;
   display: flex;
-  /* Keep the editor light in both site color schemes: the default
-     CodeMirror highlight colors are designed for light backgrounds. */
-  background: #fff;
+  background: var(--tde-cm-bg);
 }
 
 /* One pane per tab (exercise / answer); only the active one is shown. */
@@ -128,10 +183,181 @@ terra-draw-editor.tde:fullscreen .tde-body {
 .tde-editor-pane .cm-editor {
   height: 100%;
   font-size: 0.7rem;
+  background-color: var(--tde-cm-bg);
+  color: var(--tde-cm-fg);
 }
 
 .tde-editor-pane .cm-editor.cm-focused {
   outline: none;
+}
+
+/* --- CodeMirror theme -----------------------------------------------------
+   Every rule below is scoped under `.tde-editor-pane .cm-editor` so it beats
+   CodeMirror's injected base theme (specificity 0,2,0) without !important.
+   Colours come from the variables at the top of this file. */
+
+.tde-editor-pane .cm-editor .cm-content {
+  color: var(--tde-cm-fg);
+  caret-color: var(--tde-cm-cursor);
+}
+
+.tde-editor-pane .cm-editor .cm-gutters {
+  background-color: var(--tde-cm-gutter-bg);
+  color: var(--tde-cm-gutter-fg);
+  border-right: none;
+}
+
+.tde-editor-pane .cm-editor .cm-activeLine,
+.tde-editor-pane .cm-editor .cm-activeLineGutter {
+  background-color: var(--tde-cm-active-line);
+}
+
+.tde-editor-pane .cm-editor .cm-activeLineGutter {
+  color: var(--tde-cm-active-gutter-fg);
+}
+
+.tde-editor-pane .cm-editor .cm-cursor,
+.tde-editor-pane .cm-editor .cm-dropCursor {
+  border-left-color: var(--tde-cm-cursor);
+}
+
+.tde-editor-pane .cm-editor .cm-selectionBackground,
+.tde-editor-pane .cm-editor.cm-focused .cm-selectionBackground,
+.tde-editor-pane .cm-editor .cm-content ::selection {
+  background-color: var(--tde-cm-selection);
+}
+
+.tde-editor-pane .cm-editor .cm-matchingBracket,
+.tde-editor-pane .cm-editor.cm-focused .cm-matchingBracket {
+  background-color: var(--tde-cm-matching-bracket);
+  outline: none;
+}
+
+.tde-editor-pane .cm-editor .cm-nonmatchingBracket {
+  color: var(--tde-cm-invalid);
+}
+
+.tde-editor-pane .cm-editor .cm-foldPlaceholder {
+  background-color: var(--tde-cm-panel-bg);
+  color: var(--tde-cm-gutter-fg);
+  border-color: var(--tde-cm-matching-bracket);
+}
+
+/* Search panel (Ctrl-F) and the autocomplete popup both ship with basicSetup
+   and are light-only by default. */
+.tde-editor-pane .cm-editor .cm-panels,
+.tde-editor-pane .cm-editor .cm-tooltip {
+  background-color: var(--tde-cm-panel-bg);
+  color: var(--tde-cm-fg);
+  border-color: var(--tde-cm-matching-bracket);
+}
+
+/* .cm-button paints a light gradient over its background-color, so the
+   background-image has to be cleared as well. */
+.tde-editor-pane .cm-editor .cm-panels input,
+.tde-editor-pane .cm-editor .cm-panels select,
+.tde-editor-pane .cm-editor .cm-textfield,
+.tde-editor-pane .cm-editor .cm-button {
+  background-color: var(--tde-cm-bg);
+  background-image: none;
+  color: var(--tde-cm-fg);
+  border: 1px solid var(--tde-cm-matching-bracket);
+}
+
+.tde-editor-pane .cm-editor .cm-button:hover {
+  background-color: var(--tde-cm-active-line);
+}
+
+.tde-editor-pane .cm-editor .cm-panel.cm-search label {
+  color: var(--tde-cm-fg);
+}
+
+.tde-editor-pane .cm-editor .cm-tooltip-autocomplete > ul > li[aria-selected] {
+  background-color: var(--tde-cm-selection);
+  color: var(--tde-cm-fg);
+}
+
+/* --- Syntax tokens --------------------------------------------------------
+   classHighlighter composes classes (a called function is
+   `tok-variableName tok-function`), so the more specific modifiers are listed
+   after the base tags and win on source order. */
+
+.tde-editor-pane .cm-editor .tok-keyword {
+  color: var(--tde-cm-keyword);
+}
+
+.tde-editor-pane .cm-editor .tok-controlKeyword,
+.tde-editor-pane .cm-editor .tok-moduleKeyword {
+  color: var(--tde-cm-control);
+}
+
+.tde-editor-pane .cm-editor .tok-string,
+.tde-editor-pane .cm-editor .tok-special.tok-string {
+  color: var(--tde-cm-string);
+}
+
+.tde-editor-pane .cm-editor .tok-comment,
+.tde-editor-pane .cm-editor .tok-lineComment,
+.tde-editor-pane .cm-editor .tok-blockComment,
+.tde-editor-pane .cm-editor .tok-docComment {
+  color: var(--tde-cm-comment);
+}
+
+.tde-editor-pane .cm-editor .tok-number,
+.tde-editor-pane .cm-editor .tok-integer,
+.tde-editor-pane .cm-editor .tok-float,
+.tde-editor-pane .cm-editor .tok-literal {
+  color: var(--tde-cm-number);
+}
+
+.tde-editor-pane .cm-editor .tok-bool,
+.tde-editor-pane .cm-editor .tok-null,
+.tde-editor-pane .cm-editor .tok-atom,
+.tde-editor-pane .cm-editor .tok-self {
+  color: var(--tde-cm-keyword);
+}
+
+.tde-editor-pane .cm-editor .tok-typeName,
+.tde-editor-pane .cm-editor .tok-className,
+.tde-editor-pane .cm-editor .tok-namespace,
+.tde-editor-pane .cm-editor .tok-standard.tok-typeName {
+  color: var(--tde-cm-type);
+}
+
+.tde-editor-pane .cm-editor .tok-variableName {
+  color: var(--tde-cm-variable);
+}
+
+.tde-editor-pane .cm-editor .tok-propertyName {
+  color: var(--tde-cm-property);
+}
+
+.tde-editor-pane .cm-editor .tok-function,
+.tde-editor-pane .cm-editor .tok-variableName.tok-function,
+.tde-editor-pane .cm-editor .tok-propertyName.tok-function,
+.tde-editor-pane .cm-editor .tok-macroName {
+  color: var(--tde-cm-function);
+}
+
+.tde-editor-pane .cm-editor .tok-operator,
+.tde-editor-pane .cm-editor .tok-punctuation,
+.tde-editor-pane .cm-editor .tok-bracket,
+.tde-editor-pane .cm-editor .tok-separator,
+.tde-editor-pane .cm-editor .tok-derefOperator {
+  color: var(--tde-cm-operator);
+}
+
+.tde-editor-pane .cm-editor .tok-regexp,
+.tde-editor-pane .cm-editor .tok-escape {
+  color: var(--tde-cm-regexp);
+}
+
+.tde-editor-pane .cm-editor .tok-meta {
+  color: var(--tde-cm-comment);
+}
+
+.tde-editor-pane .cm-editor .tok-invalid {
+  color: var(--tde-cm-invalid);
 }
 
 /* Draggable divider between editor and preview */
@@ -148,15 +374,15 @@ terra-draw-editor.tde:fullscreen .tde-body {
     linear-gradient(
       to right,
       transparent calc(50% - 2px),
-      rgba(0, 0, 0, 0.25) calc(50% - 2px),
-      rgba(0, 0, 0, 0.25) calc(50% - 1px),
+      var(--tde-rail) calc(50% - 2px),
+      var(--tde-rail) calc(50% - 1px),
       transparent calc(50% - 1px)
     ),
     linear-gradient(
       to right,
       transparent calc(50% + 1px),
-      rgba(0, 0, 0, 0.25) calc(50% + 1px),
-      rgba(0, 0, 0, 0.25) calc(50% + 2px),
+      var(--tde-rail) calc(50% + 1px),
+      var(--tde-rail) calc(50% + 2px),
       transparent calc(50% + 2px)
     );
   touch-action: none;
@@ -233,15 +459,15 @@ terra-draw-editor.tde:fullscreen .tde-body {
       linear-gradient(
         to bottom,
         transparent calc(50% - 2px),
-        rgba(0, 0, 0, 0.25) calc(50% - 2px),
-        rgba(0, 0, 0, 0.25) calc(50% - 1px),
+        var(--tde-rail) calc(50% - 2px),
+        var(--tde-rail) calc(50% - 1px),
         transparent calc(50% - 1px)
       ),
       linear-gradient(
         to bottom,
         transparent calc(50% + 1px),
-        rgba(0, 0, 0, 0.25) calc(50% + 1px),
-        rgba(0, 0, 0, 0.25) calc(50% + 2px),
+        var(--tde-rail) calc(50% + 1px),
+        var(--tde-rail) calc(50% + 2px),
         transparent calc(50% + 2px)
       );
   }
