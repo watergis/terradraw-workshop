@@ -8,6 +8,18 @@ dependencies = [
     "zensical>=0.0.46",
 ]
 
+# This project is a documentation site, not a Python package: it only exists to
+# declare the dependencies above. `uv` honours `[tool.uv] package = false`, but
+# Cloudflare Pages installs with plain `pip install .`, where setuptools would
+# otherwise try to auto-discover `template/` and `overrides/` as packages and
+# fail. An empty module list makes that install a metadata-only no-op.
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = []
+
 [dependency-groups]
 dev = [
     "ruff>=0.15.20",

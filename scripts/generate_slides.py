@@ -12,7 +12,9 @@ they need no rewriting.
 Marp does not understand the Markdown dialect the site uses, so the source is
 preprocessed first:
 
-* slides are split at `##`, `###` and author-written `---` rules;
+* slides are split at `#`, `##`, `###` and author-written `---` rules; the
+  page title (`#`) gets a slide of its own, and the text below it starts the
+  next slide;
 * pymdownx admonitions (`!!!` / `???`) become blockquotes;
 * the `<terra-draw-editor>` live editor is replaced by a pointer back to the
   web page — it cannot run inside a deck;
@@ -69,6 +71,7 @@ ADMONITION_RE = re.compile(
     r'(?P<type>[\w-]+)(?:[ \t]+"(?P<title>[^"]*)")?[ \t]*$'
 )
 LINK_RE = re.compile(r"(?<=\]\()(?P<target>[^)\s]+)(?=\))")
+TITLE_RE = re.compile(r"^# ")
 HEADING_RE = re.compile(r"^###? ")
 
 EDITOR_NOTE = "> 💻 **Live editor** — open this page in the browser to run the code."
@@ -141,7 +144,11 @@ def convert_admonitions(text: str) -> str:
 
 
 def split_into_slides(text: str) -> list[str]:
-    """Split at column-0 `##` / `###` headings and standalone `---` rules."""
+    """Split at column-0 headings and standalone `---` rules.
+
+    A `#` title stands alone on its slide: whatever follows it starts the next
+    one. `##` and `###` keep their section on the same slide as the heading.
+    """
     slides: list[list[str]] = [[]]
     in_fence = False
 
@@ -149,6 +156,12 @@ def split_into_slides(text: str) -> list[str]:
         if line.startswith(("```", "~~~")):
             in_fence = not in_fence
         elif not in_fence:
+            if TITLE_RE.match(line):
+                if any(existing.strip() for existing in slides[-1]):
+                    slides.append([])
+                slides[-1].append(line)
+                slides.append([])
+                continue
             if HEADING_RE.match(line):
                 if any(existing.strip() for existing in slides[-1]):
                     slides.append([])
