@@ -4,6 +4,7 @@ Terra Draw and the `maplibre-gl-terradraw` plugin have been presented at several
 
 | Event | Talks |
 | --- | --- |
+| [FOSS4G 2026 Hiroshima](./foss4g-2026.md) | Terra Draw - bring drawing feature to all map applications |
 | [FOSS4G Europe 2026](./foss4g-europe-2026.md) | Terra Draw: What's new for 2026? |
 | [FOSS4G 2025 Auckland](./foss4g-2025.md) | maplibre-gl-terradraw - new drawing plugin for maplibre-gl-js |
 | [FOSS4G Europe 2025](./foss4g-europe-2025.md) | Terra Draw: 3 Years of Open Source Map Drawing<br>maplibre-gl-terradraw - new drawing plugin for maplibre-gl-js |
