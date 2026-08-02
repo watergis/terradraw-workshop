@@ -6,10 +6,15 @@
 		GlobeControl,
 		Map,
 		NavigationControl,
-		ScaleControl
+		ScaleControl,
+        setWorkerUrl
 	} from 'maplibre-gl';
 	import { onMount } from 'svelte';
 	import 'maplibre-gl/dist/maplibre-gl.css';
+
+	// As this only works for the Vite development server. Then add the following to where Maplibre is used:
+	import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
+	setWorkerUrl(workerUrl);
 
 	let mapContainer: HTMLDivElement | undefined = $state();
 	let map: Map | undefined = $state();

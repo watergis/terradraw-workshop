@@ -27,10 +27,10 @@
  */
 
 const PINS = {
-  maplibre: '5.24.0',
-  terraDraw: '1.32.0',
+  maplibre: '6.1.0',
+  terraDraw: '1.32.2',
   adapter: '1.4.1', // terra-draw-maplibre-gl-adapter
-  plugin: '1.14.4', // @watergis/maplibre-gl-terradraw
+  plugin: '1.15.2', // @watergis/maplibre-gl-terradraw
   leaflet: '1.9.4',
   leafletAdapter: '1.3.0',
   openlayers: '10.9.0', // ol
@@ -53,16 +53,20 @@ const PINS = {
 const TERRA_DRAW_URL = `https://unpkg.com/terra-draw@${PINS.terraDraw}/dist/terra-draw.modern.js`;
 
 // One preview environment per mapping library: import-map entries + CSS.
-// UMD-only packages (maplibre-gl, leaflet, mapbox-gl) come from esm.sh which
-// adds named ESM exports (jsdelivr `+esm` does NOT — it breaks named imports
-// like LngLat). The Terra Draw adapters ship real ESM builds used directly
-// from unpkg; their bare imports ('terra-draw', 'leaflet') resolve through
-// the same import map, so all modules share single instances.
+// UMD-only packages (leaflet, mapbox-gl) come from esm.sh which adds named ESM
+// exports (jsdelivr `+esm` does NOT — it breaks named imports like LngLat).
+// maplibre-gl v6 ships a real ESM build instead, and it must be loaded from its
+// own dist directory: the map derives its Web Worker URL from `import.meta.url`
+// and the worker imports `./maplibre-gl-shared.mjs` relatively, so the sibling
+// files have to be reachable (esm.sh rewrites the path and 404s the worker).
+// The Terra Draw adapters ship real ESM builds used directly from unpkg; their
+// bare imports ('terra-draw', 'leaflet') resolve through the same import map,
+// so all modules share single instances.
 // `keys` lists the API-key placeholders (see keys.js) the environment needs.
 const LIBS = {
   maplibre: {
     imports: {
-      'maplibre-gl': `https://esm.sh/maplibre-gl@${PINS.maplibre}`,
+      'maplibre-gl': `https://unpkg.com/maplibre-gl@${PINS.maplibre}/dist/maplibre-gl.mjs`,
       'terra-draw-maplibre-gl-adapter': `https://unpkg.com/terra-draw-maplibre-gl-adapter@${PINS.adapter}/dist/terra-draw-maplibre-gl-adapter.modern.js`,
       '@watergis/maplibre-gl-terradraw': `https://unpkg.com/@watergis/maplibre-gl-terradraw@${PINS.plugin}/dist/maplibre-gl-terradraw.es.js`
     },
@@ -125,18 +129,23 @@ const MAP_STYLE = 'https://tiles.openfreemap.org/styles/bright';
 
 /** Boilerplate module executed in the iframe before the user code. */
 const MAP_BOILERPLATE = `
-import maplibregl from 'maplibre-gl';
+import {
+  Map,
+  NavigationControl,
+  FullscreenControl,
+  AttributionControl
+} from 'maplibre-gl';
 
-const map = new maplibregl.Map({
+const map = new Map({
   container: 'map',
   style: '${MAP_STYLE}',
   center: [${MAP_CENTER}],
   zoom: ${MAP_ZOOM},
   attributionControl: false
 });
-map.addControl(new maplibregl.NavigationControl(), 'top-right');
-map.addControl(new maplibregl.FullscreenControl(), 'top-right');
-map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
+map.addControl(new NavigationControl(), 'top-right');
+map.addControl(new FullscreenControl(), 'top-right');
+map.addControl(new AttributionControl({ compact: true }), 'bottom-right');
 
 // Expose the map to the user code (mirrors the \`map\` variable in the
 // SvelteKit template).
@@ -505,7 +514,12 @@ class TerraDrawEditor extends HTMLElement {
     host.innerHTML = '';
     const iframe = document.createElement('iframe');
     iframe.className = 'tde-frame';
-    iframe.setAttribute('sandbox', 'allow-scripts');
+    // `allow-same-origin` is required: MapLibre v6 needs a module Web Worker,
+    // and an opaque (sandboxed, origin `null`) document cannot create one at
+    // all — the map then hangs silently with no error event. The preview only
+    // ever runs code the reader typed themselves on a static, credential-free
+    // site, so sharing the docs origin is an acceptable trade.
+    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
     iframe.setAttribute('allow', 'fullscreen');
     iframe.srcdoc = this.buildSrcdoc(userJs);
     host.appendChild(iframe);
