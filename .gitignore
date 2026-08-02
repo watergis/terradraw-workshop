@@ -211,3 +211,8 @@ __marimo__/
 
 # Live editor vendor bundle build (scripts/editor-bundle)
 scripts/editor-bundle/node_modules/
+scripts/slides/node_modules/
+
+# Marp slide decks generated at build time (scripts/generate_slides.py)
+docs/**/*_slide.html
+scripts/slides/node_modules/

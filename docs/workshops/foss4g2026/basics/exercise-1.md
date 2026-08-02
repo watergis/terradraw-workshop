@@ -4,8 +4,7 @@ Let's create a basic Terra Draw setup with MapLibre GL JS — without any UI int
 
 ## Try it in the live editor
 
-The starter code below contains two TODO comments. Complete them, then click
-**Run ▶**. If you get stuck, open the **Answer** tab.
+The starter code below contains two TODO comments. Complete them, then click **Run ▶**. If you get stuck, open the **Answer** tab.
 
 <terra-draw-editor start="../../code/exercise-1/start.ts" answer="../../code/exercise-1/answer.ts" height="480"></terra-draw-editor>
 
@@ -18,8 +17,9 @@ import { TerraDraw, TerraDrawRectangleMode } from 'terra-draw';
 import { TerraDrawMapLibreGLAdapter } from 'terra-draw-maplibre-gl-adapter';
 ```
 
-Then create a Terra Draw instance, connecting the map through the adapter and
-registering the rectangle mode:
+---
+
+Then create a Terra Draw instance, connecting the map through the adapter and registering the rectangle mode:
 
 ```ts
 const draw = new TerraDraw({
@@ -30,6 +30,8 @@ const draw = new TerraDraw({
     modes: [new TerraDrawRectangleMode()],
 });
 ```
+
+---
 
 Finally, wait for MapLibre to load the map style, then start drawing:
 
@@ -42,14 +44,11 @@ map.once('load', () => {
 });
 ```
 
-Now you can draw rectangle polygons by clicking on the map: one click starts
-the rectangle, a second click finishes it.
+Now you can draw rectangle polygons by clicking on the map: one click starts the rectangle, a second click finishes it.
 
 ## In the local SvelteKit template
 
-Open `src/routes/+page.svelte`, add the imports below the existing ones, and
-put the Terra Draw setup at the end of the `onMount()` function, after the
-map initialization:
+Open `src/routes/+page.svelte`, add the imports below the existing ones, and put the Terra Draw setup at the end of the `onMount()` function, after the map initialization:
 
 ```ts
 onMount(() => {

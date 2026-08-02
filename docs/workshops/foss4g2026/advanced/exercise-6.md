@@ -6,9 +6,7 @@ Terra Draw provides powerful data management capabilities following the [officia
 
 You can add features programmatically by using `draw.addFeatures()`.
 
-Let's add a default point at the **Atomic Bomb Dome** in Hiroshima — a
-UNESCO World Heritage Site just next to the FOSS4G 2026 venue area — when
-the page is initially loaded:
+Let's add a default point at the **Atomic Bomb Dome** in Hiroshima — a UNESCO World Heritage Site just next to the FOSS4G 2026 venue area — when the page is initially loaded:
 
 ```ts
 // Add a default point feature at the Atomic Bomb Dome in Hiroshima
@@ -28,12 +26,9 @@ draw.addFeatures([
 ```
 
 !!! note
-    The `mode` property must exist in the GeoJSON properties and the
-    corresponding mode must be registered in the Terra Draw instance in
-    advance.
+    The `mode` property must exist in the GeoJSON properties and the corresponding mode must be registered in the Terra Draw instance in advance.
 
-`addFeatures` returns validation results, so you can check whether your
-GeoJSON was accepted:
+`addFeatures` returns validation results, so you can check whether your GeoJSON was accepted:
 
 ```ts
 const results = draw.addFeatures(features);
@@ -73,8 +68,7 @@ draw.transformFeatureGeometry(id, {
 
 ## Delete a selected feature from the UI
 
-Let's add a **Delete** button that removes the currently selected feature
-using `draw.removeFeatures()`.
+Let's add a **Delete** button that removes the currently selected feature using `draw.removeFeatures()`.
 
 ## Try it in the live editor
 

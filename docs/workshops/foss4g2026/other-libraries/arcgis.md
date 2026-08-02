@@ -1,8 +1,6 @@
 # ArcGIS Maps SDK
 
-The [ArcGIS Maps SDK for JavaScript](https://developers.arcgis.com/javascript/latest/)
-is Esri's mapping library. Like OpenLayers it is fully modular, so the Terra
-Draw adapter receives the classes it needs via `lib`.
+The [ArcGIS Maps SDK for JavaScript](https://developers.arcgis.com/javascript/latest/) is Esri's mapping library. Like OpenLayers it is fully modular, so the Terra Draw adapter receives the classes it needs via `lib`.
 
 To use it locally:
 
@@ -37,9 +35,7 @@ const view = new MapView({
 ```
 
 !!! note "Basemaps and API keys"
-    Esri's own basemaps (e.g. `basemap: 'topo-vector'`) require an ArcGIS API
-    key. The live example below instead builds a keyless basemap from CARTO
-    raster tiles with a `WebTileLayer`, so it runs without any key.
+    Esri's own basemaps (e.g. `basemap: 'topo-vector'`) require an ArcGIS API key. The live example below instead builds a keyless basemap from CARTO raster tiles with a `WebTileLayer`, so it runs without any key.
 
 ### 3. The adapter — and when to start
 
@@ -68,6 +64,4 @@ view.when(() => {
 
 ## What's Next?
 
-That's the end of the hands-on content — six mapping libraries, one Terra
-Draw API. Head over to the [Q&A page](../support.md) for how to stay in touch
-with the Terra Draw community.
+That's the end of the hands-on content — six mapping libraries, one Terra Draw API. Head over to the [Q&A page](../support.md) for how to stay in touch with the Terra Draw community.

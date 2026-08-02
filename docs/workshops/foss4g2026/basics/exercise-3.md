@@ -4,8 +4,7 @@ Let's add `TerraDrawSelectMode` to allow selecting and modifying features.
 
 ## Try it in the live editor
 
-Add the select mode with feature and coordinate editing enabled, plus a
-**Select** button.
+Add the select mode with feature and coordinate editing enabled, plus a **Select** button.
 
 <terra-draw-editor start="../../code/exercise-3/start.ts" answer="../../code/exercise-3/answer.ts" height="520"></terra-draw-editor>
 
@@ -24,8 +23,9 @@ import {
 } from 'terra-draw';
 ```
 
-Then add `TerraDrawSelectMode` to the `modes` array. The `flags` option
-controls what can be edited, per mode name:
+---
+
+Then add `TerraDrawSelectMode` to the `modes` array. The `flags` option controls what can be edited, per mode name:
 
 ```ts
 new TerraDrawSelectMode({
@@ -76,6 +76,8 @@ new TerraDrawSelectMode({
 })
 ```
 
+---
+
 Finally add a **Select** button:
 
 ```ts
@@ -99,8 +101,7 @@ Now you can select a feature after drawing, then drag or modify it.
 
 ### Extra challenge
 
-The following options are available in the `flags` of `TerraDrawSelectMode`.
-Change or add options to see how they affect the Select mode behaviour:
+The following options are available in the `flags` of `TerraDrawSelectMode`. Change or add options to see how they affect the Select mode behaviour:
 
 ```ts
 polygon: {
@@ -109,16 +110,12 @@ polygon: {
         rotateable: true, // you can rotate with ctrl+r (ctrl+command+r in mac)
         coordinates: {
             midpoints: true,
-
             // Can be moved
             draggable: true,
-
             // Can be deleted
             deletable: true,
-
             // Can snap to other coordinates from geometries _of the same mode_
             snappable: true,
-
             // Allow resizing of the geometry from a given origin.
             // center will allow resizing of the aspect ratio from the center
             // and opposite allows resizing from the opposite corner of the

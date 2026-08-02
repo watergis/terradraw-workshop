@@ -1,26 +1,19 @@
 # Exercise 2: Drawing Modes with UI Buttons
 
-Let's register more drawing modes and add buttons to switch between them —
-including the brand-new **polyline** mode.
+Let's register more drawing modes and add buttons to switch between them — including the brand-new **polyline** mode.
 
 ## Polyline mode (new in Terra Draw v1.31)
 
-`TerraDrawPolyLineMode` is one of the newest drawing modes. It starts exactly
-like the linestring mode, but with a twist:
+`TerraDrawPolyLineMode` is one of the newest drawing modes. It starts exactly like the linestring mode, but with a twist:
 
-- keep clicking to draw a line, then double-click (or press Enter) to finish
-  it as a **LineString** — same as linestring mode
-- **or click the first point of the line again to close the shape into a
-  Polygon**
+- keep clicking to draw a line, then double-click (or press Enter) to finish it as a **LineString** — same as linestring mode
+- **or click the first point of the line again to close the shape into a Polygon**
 
-This mimics the drawing behaviour of many desktop GIS tools, where a single
-tool can produce either a line or a polygon.
+This mimics the drawing behaviour of many desktop GIS tools, where a single tool can produce either a line or a polygon.
 
 ## Try it in the live editor
 
-Replace the rectangle mode with `point`, `linestring`, `polyline` and
-`polygon` modes, then wire up the buttons. Try closing a polyline into a
-polygon by clicking its first point!
+Replace the rectangle mode with `point`, `linestring`, `polyline` and `polygon` modes, then wire up the buttons. Try closing a polyline into a polygon by clicking its first point!
 
 <terra-draw-editor start="../../code/exercise-2/start.ts" answer="../../code/exercise-2/answer.ts" height="520"></terra-draw-editor>
 
@@ -52,8 +45,9 @@ const draw = new TerraDraw({
 });
 ```
 
-Remove `draw.setMode("rectangle");` so that we don't automatically start with
-any drawing tool:
+---
+
+Remove `draw.setMode("rectangle");` so that we don't automatically start with any drawing tool:
 
 ```diff
 map.once('load', () => {
@@ -75,8 +69,9 @@ const handleClearClick = () => {
 };
 ```
 
-Finally add one button per mode. In the live editor this is done with the
-`addButton()` helper:
+---
+
+Finally add one button per mode. In the live editor this is done with the `addButton()` helper:
 
 ```ts
 addButton('Point', () => handleModeClick('point'));
@@ -88,8 +83,7 @@ addButton('Clear', () => draw.clear());
 
 ## In the local SvelteKit template
 
-In `+page.svelte`, the handlers go just before the closing `</script>` tag,
-and the buttons go into the sidebar `<aside>`:
+In `+page.svelte`, the handlers go just before the closing `</script>` tag, and the buttons go into the sidebar `<aside>`:
 
 ```html
 <aside class="sidebar">
@@ -109,10 +103,7 @@ and the buttons go into the sidebar `<aside>`:
 
 ### Extra challenge
 
-Try adding other Terra Draw modes: `TerraDrawCircleMode`,
-`TerraDrawFreehandMode`, `TerraDrawAngledRectangleMode`,
-`TerraDrawMarkerMode`... The pattern is always the same: register the mode in
-the `modes` array and add a button that calls `draw.setMode('<mode name>')`.
+Try adding other Terra Draw modes: `TerraDrawCircleMode`, `TerraDrawFreehandMode`, `TerraDrawAngledRectangleMode`, `TerraDrawMarkerMode`... The pattern is always the same: register the mode in the `modes` array and add a button that calls `draw.setMode('<mode name>')`.
 
 ## What's Next?
 

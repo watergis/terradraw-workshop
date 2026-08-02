@@ -1,9 +1,6 @@
 # OpenLayers
 
-[OpenLayers](https://openlayers.org/) is a powerful, fully modular mapping
-library. This page shows the same drawing app running on OpenLayers — press
-**Run ▶** below and compare the code with the MapLibre version: the Terra
-Draw part is identical.
+[OpenLayers](https://openlayers.org/) is a powerful, fully modular mapping library. This page shows the same drawing app running on OpenLayers — press **Run ▶** below and compare the code with the MapLibre version: the Terra Draw part is identical.
 
 To use it locally:
 
@@ -38,14 +35,11 @@ const map = new Map({
 ```
 
 !!! warning "Projections"
-    OpenLayers works in Web Mercator (EPSG:3857) internally, so `[lng, lat]`
-    coordinates are converted with `fromLonLat()`. Terra Draw itself always
-    speaks GeoJSON `[lng, lat]` — the adapter converts for you.
+    OpenLayers works in Web Mercator (EPSG:3857) internally, so `[lng, lat]` coordinates are converted with `fromLonLat()`. Terra Draw itself always speaks GeoJSON `[lng, lat]` — the adapter converts for you.
 
 ### 3. The adapter
 
-Because OpenLayers is modular, the adapter receives the classes it needs via
-`lib` instead of importing them itself:
+Because OpenLayers is modular, the adapter receives the classes it needs via `lib` instead of importing them itself:
 
 ```ts
 adapter: new TerraDrawOpenLayersAdapter({
