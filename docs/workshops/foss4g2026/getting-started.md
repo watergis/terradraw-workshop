@@ -176,6 +176,7 @@ The exercise code is written to be almost identical in both environments:
 
 ## What's Next?
 
-With your environment ready, let's learn the Terra Draw fundamentals.
+With your environment ready, let's take a quick look at what changed in the
+MapLibre GL JS version this workshop uses.
 
-[Continue to Terra Draw Basics](./basics/index.md)
+[Continue to MapLibre GL JS v5 to v6](./maplibre-v6.md)
