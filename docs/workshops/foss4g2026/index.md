@@ -33,7 +33,7 @@ The workshop runs for 3 hours with a 15-minute break after the first hour.
 
 | Time | Duration | Section |
 |----------|----------|---------|
-|14:00-14:15| 15 min | Terra Draw Introduction |
+|14:00-14:15| 15 min | [Terra Draw Introduction](./introduction.md) |
 |14:15-14:30| 15 min | [Environment Setup](./getting-started.md) |
 |14:30-15:00| 30 min | [Terra Draw Basics - Exercise 1 & 2](./basics/index.md) |
 |15:00-15:15| 15 min | Break |
@@ -51,6 +51,6 @@ Everything lives in a single repository: [watergis/terradraw-workshop](https://g
 
 ## Getting Started
 
-To begin setting up your development environment:
+To begin, let's look at what Terra Draw is and what is new in 2026:
 
-[Start with Environment Setup](./getting-started.md)
+[Start with Terra Draw Introduction](./introduction.md)
