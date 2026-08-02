@@ -1,0 +1,170 @@
+/* @theme terradraw */
+
+/*
+ * Marp theme for the Terra Draw workshop slide decks.
+ * Colours follow the indigo palette configured in zensical.toml so the decks
+ * feel like the documentation site they are generated from.
+ */
+
+@import 'default';
+
+:root {
+  --td-primary: #3f51b5;
+  --td-accent: #536dfe;
+  --td-fg: #1f2129;
+  --td-muted: #5b5f70;
+  --td-surface: #f4f5fb;
+  --td-border: #dfe1ee;
+}
+
+section {
+  width: 1280px;
+  height: 720px;
+  padding: 60px 70px 80px;
+  font-size: 26px;
+  line-height: 1.55;
+  color: var(--td-fg);
+  background: #fff;
+  justify-content: flex-start;
+}
+
+/* Headings ---------------------------------------------------------------- */
+
+section h1 {
+  font-size: 1.9em;
+  color: var(--td-primary);
+  margin: 0 0 0.5em;
+}
+
+section h2 {
+  font-size: 1.35em;
+  color: var(--td-primary);
+  margin: 0 0 0.6em;
+  padding-bottom: 0.2em;
+  border-bottom: 3px solid var(--td-border);
+}
+
+section h3 {
+  font-size: 1.1em;
+  color: var(--td-fg);
+  margin: 0 0 0.5em;
+}
+
+/* Title slide ------------------------------------------------------------- */
+
+section.lead {
+  justify-content: center;
+  text-align: center;
+}
+
+section.lead h1 {
+  font-size: 2.4em;
+  margin-bottom: 0.3em;
+}
+
+section.lead p {
+  color: var(--td-muted);
+  font-size: 0.95em;
+}
+
+section.lead img {
+  max-height: 240px;
+}
+
+/* Body -------------------------------------------------------------------- */
+
+section a {
+  color: var(--td-accent);
+}
+
+section img {
+  max-width: 100%;
+  max-height: 420px;
+}
+
+section ul,
+section ol {
+  margin: 0 0 0.6em;
+}
+
+section li {
+  margin-bottom: 0.25em;
+}
+
+/* Code — workshop pages carry long TypeScript snippets, so keep them small
+   enough that a whole block fits on one slide. */
+
+section code {
+  font-size: 0.8em;
+  background: var(--td-surface);
+  border-radius: 4px;
+  padding: 0.1em 0.3em;
+}
+
+section pre {
+  font-size: 0.62em;
+  line-height: 1.45;
+  border: 1px solid var(--td-border);
+  border-radius: 8px;
+  background: var(--td-surface);
+  overflow: hidden;
+}
+
+section pre code {
+  font-size: 1em;
+  background: none;
+  padding: 0;
+}
+
+/* Blockquotes — admonitions from the source markdown are converted to
+   blockquotes by scripts/generate_slides.py. */
+
+section blockquote {
+  margin: 0.6em 0;
+  padding: 0.5em 1em;
+  border: none;
+  border-left: 5px solid var(--td-accent);
+  background: var(--td-surface);
+  border-radius: 0 8px 8px 0;
+  font-size: 0.9em;
+  color: var(--td-fg);
+}
+
+section blockquote::before,
+section blockquote::after {
+  content: none;
+}
+
+section blockquote p:first-child {
+  margin-top: 0;
+}
+
+section blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* Tables ------------------------------------------------------------------ */
+
+section table {
+  font-size: 0.72em;
+  border-collapse: collapse;
+  margin: 0.4em 0;
+}
+
+section th {
+  background: var(--td-primary);
+  color: #fff;
+}
+
+section th,
+section td {
+  border: 1px solid var(--td-border);
+  padding: 0.35em 0.7em;
+}
+
+/* Chrome ------------------------------------------------------------------ */
+
+section::after {
+  color: var(--td-muted);
+  font-size: 0.5em;
+}

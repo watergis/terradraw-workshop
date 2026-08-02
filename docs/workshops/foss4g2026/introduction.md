@@ -5,15 +5,9 @@ solves, and where the project stands in 2026.
 
 ## What is Terra Draw?
 
-[Terra Draw](https://terradraw.io) is an MIT licensed, zero dependency
-JavaScript library for **drawing geometries on web maps**. Instead of being tied
-to one mapping library, it provides a single API that works across six of them —
-MapLibre GL JS, Leaflet, OpenLayers, Mapbox GL JS, Google Maps and the ArcGIS
-Maps SDK.
+[Terra Draw](https://terradraw.io) is an MIT licensed, zero dependency JavaScript library for **drawing geometries on web maps**. Instead of being tied to one mapping library, it provides a single API that works across six of them — MapLibre GL JS, Leaflet, OpenLayers, Mapbox GL JS, Google Maps and the ArcGIS Maps SDK.
 
-It is created and maintained by [James Milner](https://github.com/JamesLMilner),
-and the source lives at
-[JamesLMilner/terra-draw](https://github.com/JamesLMilner/terra-draw).
+It is created and maintained by [James Milner](https://github.com/JamesLMilner), and the source lives at [JamesLMilner/terra-draw](https://github.com/JamesLMilner/terra-draw).
 
 ```bash
 npm install terra-draw

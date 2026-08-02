@@ -1,0 +1,9 @@
+{
+  "name": "terradraw-workshop-slides",
+  "private": true,
+  "type": "module",
+  "description": "Marp CLI toolchain used by scripts/generate_slides.py to build docs/**/*_slide.html",
+  "devDependencies": {
+    "@marp-team/marp-cli": "4.5.0"
+  }
+}

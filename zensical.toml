@@ -75,6 +75,7 @@ nav = [
 # Theme options (modern variant is Zensical's default)
 # ----------------------------------------------------------------------------
 [project.theme]
+custom_dir = "overrides"
 logo = "assets/images/favicon.png"
 favicon = "assets/images/favicon.ico"
 language = "en"
