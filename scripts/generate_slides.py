@@ -30,7 +30,8 @@ A page configures its own deck through its front matter:
     header_logo: ../assets/images/foss4g2026/foss4g2026-logo-small.svg
     title_logo: ../assets/images/foss4g2026/foss4g2026-logo-large.svg
     event_date: 3 September 2026, 14:30
-    event_venue: Ran1, FOSS4G 2026 Hiroshima
+    event_venue: International Conference Center Hiroshima
+    event_name: FOSS4G 2026 Hiroshima
     presenter_name: Jin Igarashi
     presenter_role: Software Engineer, Fracta Inc
     profile_image: ../assets/images/jin-igarashi.png
@@ -47,8 +48,10 @@ Paths are written relative to the page, like Markdown image paths. Geometry
 lives in the theme (`.td-header-logo` / `.td-title-logo`); only the image URLs
 are injected per deck.
 
-`event_date` and `event_venue` are added to the title slide. `profile_image`
-adds a generated speaker slide right after it, built from `presenter_name`,
+`presenter_name`, `event_date`, `event_venue` and `event_name` are added to the
+title slide — the speaker name above the event lines, one per line, in that
+order. `profile_image` adds a generated
+speaker slide right after the title, built from `presenter_name`,
 `presenter_role` and the `linkedin` / `github` account names.
 
 Run before building or serving the site:
@@ -245,12 +248,24 @@ def split_into_slides(text: str) -> list[str]:
 
 
 def event_html(meta: dict[str, str]) -> str:
-    """Date and venue line for the title slide, if the page declares them."""
-    parts = [meta.get("event_date"), meta.get("event_venue")]
-    spans = "".join(f"<span>{escape(part)}</span>" for part in parts if part)
-    if not spans:
+    """Speaker and event block for the title slide.
+
+    The presenter name sits above the event metadata, which stacks date, venue
+    and event name one per line. Each part is optional, so a page that declares
+    none of them gets nothing.
+    """
+    parts = [meta.get("event_date"), meta.get("event_venue"), meta.get("event_name")]
+    lines = "".join(f"<div>{escape(part)}</div>" for part in parts if part)
+
+    blocks = ""
+    name = meta.get("presenter_name")
+    if name:
+        blocks += f'<div class="td-presenter">{escape(name)}</div>'
+    if lines:
+        blocks += f'<div class="td-event-meta">{lines}</div>'
+    if not blocks:
         return ""
-    return f'\n\n<div class="td-event">{spans}</div>'
+    return f'\n\n<div class="td-event">{blocks}</div>'
 
 
 def asset_prefix(relative: Path) -> str:

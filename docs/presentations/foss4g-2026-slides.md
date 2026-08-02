@@ -3,7 +3,8 @@ slide_theme: presentation
 header_logo: ../assets/images/foss4g2026/foss4g2026-logo-small.svg
 title_logo: ../assets/images/foss4g2026/foss4g2026-logo-large.svg
 event_date: 3 September 2026, 14:30
-event_venue: Ran1, FOSS4G 2026 Hiroshima
+event_venue: International Conference Center Hiroshima
+event_name: FOSS4G 2026 Hiroshima
 presenter_name: Jin Igarashi
 presenter_role: Software Engineer, Fracta Inc
 profile_image: ../assets/images/jin-igarashi.png

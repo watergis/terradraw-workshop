@@ -112,21 +112,28 @@ section.lead p {
   font-size: 0.95em;
 }
 
-/* Date and venue, pinned above the bottom edge — generated from the page's
-   `event_date` / `event_venue` front matter. */
+/* Speaker and event lines, pinned above the bottom edge — generated from the
+   page's `presenter_name` / `event_date` / `event_venue` / `event_name`. */
 section.lead .td-event {
   position: absolute;
   left: 90px;
   bottom: 64px;
-  font-size: 0.72em;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--td-primary);
 }
 
-section.lead .td-event span + span::before {
-  content: ' · ';
-  color: var(--td-muted);
+section.lead .td-presenter {
+  margin-bottom: 0.3em;
+  font-size: 0.95em;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--td-fg);
+}
+
+section.lead .td-event-meta {
+  font-size: 0.72em;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  color: var(--td-primary);
 }
 
 /* The title slide also carries the large event logo, which sits bottom-left in
