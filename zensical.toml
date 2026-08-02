@@ -21,7 +21,9 @@ nav = [
   { "Workshops" = [
     { "FOSS4G Hiroshima 2026" = [
       { "FOSS4G 2026 Workshop" = "workshops/foss4g2026/index.md" },
+      { "Terra Draw Introduction" = "workshops/foss4g2026/introduction.md" },
       { "Getting started" = "workshops/foss4g2026/getting-started.md" },
+      { "MapLibre GL JS v5 to v6" = "workshops/foss4g2026/maplibre-v6.md" },
       { "Terra Draw Basics" = [
         "workshops/foss4g2026/basics/index.md",
         { "Exercise 1 Without UI" = "workshops/foss4g2026/basics/exercise-1.md" },

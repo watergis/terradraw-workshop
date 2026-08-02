@@ -16,5 +16,9 @@ export default defineConfig({
 			// See https://svelte.dev/docs/kit/adapters for more information about adapters.
 			adapter: adapter()
 		})
-	]
+	],
+	optimizeDeps: {
+		// MapLibre v6 worker bundling can fail during dependency pre-bundling.
+		exclude: ['maplibre-gl'],
+	}
 });
