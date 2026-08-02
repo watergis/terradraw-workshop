@@ -53,8 +53,46 @@ admonitions to blockquotes, and drops the `<terra-draw-editor>` widget — the
 live editor only works on the documentation page itself.
 
 Decks are **not** rebuilt automatically by `zensical serve`; re-run
-`uv run python scripts/generate_slides.py` after editing a page. The deck theme
-lives in `scripts/slides/themes/terradraw.css`.
+`uv run python scripts/generate_slides.py` after editing a page.
+
+There are two deck themes in `scripts/slides/themes/`: `terradraw.css` for
+documentation pages (dense prose) and `terradraw-presentation.css` for
+conference talks (designed title slide, speaker slide, more air).
+
+### Deck front matter
+
+A talk page configures its own deck through its front matter:
+
+```yaml
+---
+slide_theme: presentation
+header_logo: ../assets/images/foss4g2026/foss4g2026-logo-small.svg
+title_logo: ../assets/images/foss4g2026/foss4g2026-logo-large.svg
+event_date: 3 September 2026, 14:30
+event_venue: Ran1, FOSS4G 2026 Hiroshima
+presenter_name: Jin Igarashi
+presenter_role: Software Engineer, Fracta Inc
+profile_image: ../assets/images/jin-igarashi.png
+linkedin: jinigarashi
+github: JinIgarashi
+---
+```
+
+| Key | Effect |
+| --- | --- |
+| `slide_theme` | `presentation` selects the talk theme; omit it for the documentation theme |
+| `header_logo` | Logo in the top-right corner of every slide |
+| `title_logo` | Larger logo on the title slide |
+| `event_date`, `event_venue` | Shown together at the bottom of the title slide |
+| `profile_image` | Adds a generated speaker slide after the title slide, with the image cropped to a circle on the right |
+| `presenter_name`, `presenter_role` | Name and position on that speaker slide |
+| `linkedin`, `github` | Account names — rendered as a brand icon plus the profile URL |
+
+Image paths are relative to the page, like Markdown image paths. Pages without
+these keys are unaffected. Size and position come from the `.td-header-logo`,
+`.td-title-logo`, `.td-event` and `.td-profile-*` rules in the deck theme; only
+the image URLs and the text are injected per deck.
+See `docs/presentations/foss4g-2026-slides.md` for a working example.
 
 ### Live-editor API keys
 

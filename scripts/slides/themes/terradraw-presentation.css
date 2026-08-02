@@ -1,0 +1,363 @@
+/* @theme terradraw-presentation */
+
+/*
+ * Marp theme for conference talks.
+ *
+ * The sibling `terradraw` theme renders documentation pages as decks, so it
+ * optimises for dense prose. A talk deck wants the opposite: fewer words, more
+ * air, a designed title slide and a speaker slide. A page opts in with
+ * `slide_theme: presentation` in its front matter.
+ */
+
+@import 'default';
+
+:root {
+  --td-primary: #3f51b5;
+  --td-accent: #536dfe;
+  --td-fg: #1f2129;
+  --td-muted: #5b5f70;
+  --td-surface: #f4f5fb;
+  --td-border: #dfe1ee;
+}
+
+section {
+  width: 1280px;
+  height: 720px;
+  padding: 72px 90px 84px;
+  font-size: 30px;
+  line-height: 1.5;
+  color: var(--td-fg);
+  background: #fff;
+  justify-content: flex-start;
+}
+
+/* Headings ---------------------------------------------------------------- */
+
+section h1 {
+  font-size: 1.9em;
+  color: var(--td-primary);
+  margin: 0 0 0.5em;
+}
+
+/* `##` is a section divider on a talk deck — it only ever appears on a
+   `.td-section` slide, which restyles it completely below. */
+section h2 {
+  font-size: 1.45em;
+  font-weight: 700;
+  color: var(--td-primary);
+  margin: 0 0 0.7em;
+  letter-spacing: -0.01em;
+}
+
+/* `###` is the title of an ordinary content slide. */
+section h3 {
+  font-size: 1.45em;
+  font-weight: 700;
+  color: var(--td-primary);
+  margin: 0 0 0.7em;
+  letter-spacing: -0.01em;
+}
+
+section h4 {
+  font-size: 1.1em;
+  color: var(--td-fg);
+  margin: 0 0 0.5em;
+}
+
+/* Title slide ------------------------------------------------------------- */
+
+/* The title slide also carries `title_logo` as its own `background-image`
+   (injected with `!important` by the generator), so the tint here has to be a
+   background *colour*, and the decoration a pseudo-element. */
+section.lead {
+  justify-content: center;
+  text-align: left;
+  background-color: #eef0fb;
+}
+
+/* Page number is hidden on the title slide, so `::after` is free for a soft
+   corner wash that lifts the flat tint. */
+section.lead::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(60% 70% at 100% 0%, rgb(83 109 254 / 18%), transparent 70%),
+    radial-gradient(50% 60% at 0% 100%, rgb(255 255 255 / 90%), transparent 70%);
+}
+
+section.lead h1 {
+  font-size: 2.8em;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  max-width: 15em;
+  margin: 0;
+  padding-bottom: 0.3em;
+}
+
+/* Accent rule under the title */
+section.lead h1::after {
+  content: '';
+  display: block;
+  width: 180px;
+  height: 8px;
+  margin-top: 0.35em;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--td-primary), var(--td-accent));
+}
+
+section.lead p {
+  color: var(--td-muted);
+  font-size: 0.95em;
+}
+
+/* Date and venue, pinned above the bottom edge — generated from the page's
+   `event_date` / `event_venue` front matter. */
+section.lead .td-event {
+  position: absolute;
+  left: 90px;
+  bottom: 64px;
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--td-primary);
+}
+
+section.lead .td-event span + span::before {
+  content: ' · ';
+  color: var(--td-muted);
+}
+
+/* The title slide also carries the large event logo, which sits bottom-left in
+   the shared geometry below — move it out of the way of `.td-event`. */
+section.lead.td-title-logo {
+  background-position: calc(100% - 90px) calc(100% - 56px);
+}
+
+/* Section divider --------------------------------------------------------- */
+
+/* A `##` slide: the heading is the section title, the paragraph under it the
+   subtitle. Full-bleed gradient so the deck visibly changes chapter. */
+section.td-section {
+  justify-content: center;
+  text-align: left;
+  color: #fff;
+  background: linear-gradient(135deg, #1b2a6b 0%, #4a2a7a 100%);
+}
+
+/* Alternate the wash so consecutive sections do not look identical — the
+   generator puts this class on every other divider. */
+section.td-section-alt {
+  background: linear-gradient(135deg, #6d2a6e 0%, #b0468c 100%);
+}
+
+section.td-section h2 {
+  font-size: 2.4em;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #fff;
+  margin: 0;
+}
+
+/* The subtitle */
+section.td-section p {
+  font-size: 1.05em;
+  color: rgb(255 255 255 / 80%);
+  margin: 0.35em 0 0;
+}
+
+section.td-section::after {
+  color: rgb(255 255 255 / 60%);
+}
+
+/* The event logo is dark artwork, so it disappears on the gradient — render it
+   as a white silhouette here instead. */
+section.td-section.td-header-logo::before {
+  filter: brightness(0) invert(1);
+}
+
+/* Speaker slide ----------------------------------------------------------- */
+
+section.td-profile {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  align-items: center;
+  column-gap: 60px;
+}
+
+section.td-profile .td-profile-name {
+  font-size: 3em;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--td-fg);
+  margin: 0;
+}
+
+section.td-profile .td-profile-role {
+  font-size: 1.2em;
+  font-weight: 700;
+  color: var(--td-muted);
+  margin: 0.25em 0 1.1em;
+}
+
+section.td-profile .td-profile-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: 0.8em;
+  color: var(--td-primary);
+  margin-bottom: 0.5em;
+}
+
+section.td-profile .td-social-icon {
+  width: 1.3em;
+  height: 1.3em;
+  flex: none;
+  margin: 0;
+  max-height: none;
+}
+
+section.td-profile .td-profile-photo {
+  width: 380px;
+  height: 380px;
+  max-height: none;
+  margin: 0;
+  border-radius: 50%;
+  object-fit: cover;
+  justify-self: end;
+  box-shadow: 0 12px 32px rgb(31 33 41 / 18%);
+}
+
+/* Body -------------------------------------------------------------------- */
+
+section a {
+  color: var(--td-accent);
+}
+
+/* A talk slide is usually one screenshot plus a caption, so let it take the
+   room it needs and sit in the middle. */
+section img {
+  display: block;
+  margin: 0 auto 0.5em;
+  max-width: 100%;
+  max-height: 480px;
+}
+
+section ul,
+section ol {
+  margin: 0 0 0.6em;
+}
+
+section li {
+  margin-bottom: 0.35em;
+}
+
+/* Code -------------------------------------------------------------------- */
+
+section code {
+  font-size: 0.8em;
+  background: var(--td-surface);
+  border-radius: 4px;
+  padding: 0.1em 0.3em;
+}
+
+section pre {
+  font-size: 0.55em;
+  line-height: 1.45;
+  border: 1px solid var(--td-border);
+  border-radius: 8px;
+  background: var(--td-surface);
+  overflow: hidden;
+}
+
+section pre code {
+  font-size: 1em;
+  background: none;
+  padding: 0;
+}
+
+/* Blockquotes — admonitions from the source markdown are converted to
+   blockquotes by scripts/generate_slides.py. */
+
+section blockquote {
+  margin: 0.6em 0;
+  padding: 0.5em 1em;
+  border: none;
+  border-left: 5px solid var(--td-accent);
+  background: var(--td-surface);
+  border-radius: 0 8px 8px 0;
+  font-size: 0.9em;
+  color: var(--td-fg);
+}
+
+section blockquote::before,
+section blockquote::after {
+  content: none;
+}
+
+section blockquote p:first-child {
+  margin-top: 0;
+}
+
+section blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* Tables ------------------------------------------------------------------ */
+
+section table {
+  font-size: 0.68em;
+  border-collapse: collapse;
+  margin: 0.4em 0;
+}
+
+section th {
+  background: var(--td-primary);
+  color: #fff;
+}
+
+section th,
+section td {
+  border: 1px solid var(--td-border);
+  padding: 0.35em 0.7em;
+}
+
+/* Event logos -------------------------------------------------------------
+   Geometry only: the image URLs come from the page's `header_logo` /
+   `title_logo` front matter and are injected per deck by
+   scripts/generate_slides.py. */
+
+section.td-header-logo {
+  position: relative;
+  padding-top: 110px;
+}
+
+/* Small logo, top right of every slide */
+section.td-header-logo::before {
+  content: '';
+  position: absolute;
+  top: 30px;
+  right: 90px;
+  width: 48px;
+  height: 78px;
+  background-repeat: no-repeat;
+  background-position: right top;
+  background-size: contain;
+}
+
+/* Large logo on the title slide */
+section.td-title-logo {
+  background-repeat: no-repeat;
+  background-position: 90px calc(100% - 56px);
+  background-size: 300px auto;
+}
+
+/* Chrome ------------------------------------------------------------------ */
+
+section::after {
+  color: var(--td-muted);
+  font-size: 0.5em;
+}

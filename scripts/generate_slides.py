@@ -15,10 +15,41 @@ preprocessed first:
 * slides are split at `#`, `##`, `###` and author-written `---` rules; the
   page title (`#`) gets a slide of its own, and the text below it starts the
   next slide;
+* on a talk deck (`slide_theme: presentation`) a `##` slide is a section
+  divider — the heading is the section title and the paragraph under it the
+  subtitle — and `###` is an ordinary content slide;
 * pymdownx admonitions (`!!!` / `???`) become blockquotes;
 * the `<terra-draw-editor>` live editor is replaced by a pointer back to the
   web page — it cannot run inside a deck;
 * relative `*.md` links are rewritten to their `use_directory_urls` form.
+
+A page configures its own deck through its front matter:
+
+    ---
+    slide_theme: presentation
+    header_logo: ../assets/images/foss4g2026/foss4g2026-logo-small.svg
+    title_logo: ../assets/images/foss4g2026/foss4g2026-logo-large.svg
+    event_date: 3 September 2026, 14:30
+    event_venue: Ran1, FOSS4G 2026 Hiroshima
+    presenter_name: Jin Igarashi
+    presenter_role: Software Engineer, Fracta Inc
+    profile_image: ../assets/images/jin-igarashi.png
+    linkedin: jinigarashi
+    github: JinIgarashi
+    ---
+
+`slide_theme: presentation` switches the deck to the talk theme
+(`terradraw-presentation`); without it a page gets the documentation theme
+(`terradraw`).
+
+`header_logo` is shown on every slide, `title_logo` only on the title slide.
+Paths are written relative to the page, like Markdown image paths. Geometry
+lives in the theme (`.td-header-logo` / `.td-title-logo`); only the image URLs
+are injected per deck.
+
+`event_date` and `event_venue` are added to the title slide. `profile_image`
+adds a generated speaker slide right after it, built from `presenter_name`,
+`presenter_role` and the `linkedin` / `github` account names.
 
 Run before building or serving the site:
 
@@ -35,6 +66,7 @@ import subprocess
 import sys
 import tempfile
 import textwrap
+from html import escape
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -43,7 +75,21 @@ THEMES_DIR = ROOT / "scripts" / "slides" / "themes"
 MARP_BIN = ROOT / "scripts" / "slides" / "node_modules" / ".bin" / "marp"
 
 SLIDE_SUFFIX = "_slide"
+
+# Documentation pages get the prose-oriented theme; a talk page opts into the
+# presentation theme with `slide_theme: presentation`.
 THEME_NAME = "terradraw"
+SLIDE_THEMES = {"presentation": "terradraw-presentation"}
+
+PROFILE_CLASS = "td-profile"
+SECTION_CLASS = "td-section"
+SECTION_ALT_CLASS = "td-section-alt"
+SOCIAL_ICON_DIR = "assets/images/social"
+# Account front matter key -> (icon file stem, profile URL template)
+SOCIAL_LINKS = {
+    "linkedin": ("linkedin", "linkedin.com/in/{account}"),
+    "github": ("github", "github.com/{account}"),
+}
 
 # Admonition types mapped to the label prefix used in the generated blockquote.
 ADMONITION_ICONS = {
@@ -61,7 +107,12 @@ ADMONITION_ICONS = {
     "warning": "⚠️",
 }
 
-FRONT_MATTER_RE = re.compile(r"\A---\n.*?\n---\n", re.DOTALL)
+FRONT_MATTER_RE = re.compile(r"\A---\n(?P<body>.*?)\n---\n", re.DOTALL)
+META_LINE_RE = re.compile(r"^(?P<key>[\w-]+)[ \t]*:[ \t]*(?P<value>.*)$")
+
+# Front matter keys understood here, and the class each one adds to the deck.
+HEADER_LOGO_CLASS = "td-header-logo"
+TITLE_LOGO_CLASS = "td-title-logo"
 EDITOR_RE = re.compile(
     r"^[ \t]*<terra-draw-editor\b.*?</terra-draw-editor>[ \t]*$\n?",
     re.MULTILINE | re.DOTALL,
@@ -73,12 +124,27 @@ ADMONITION_RE = re.compile(
 LINK_RE = re.compile(r"(?<=\]\()(?P<target>[^)\s]+)(?=\))")
 TITLE_RE = re.compile(r"^# ")
 HEADING_RE = re.compile(r"^###? ")
+SECTION_RE = re.compile(r"^## ")
 
 EDITOR_NOTE = "> 💻 **Live editor** — open this page in the browser to run the code."
 
 
-def strip_front_matter(text: str) -> str:
-    return FRONT_MATTER_RE.sub("", text, count=1)
+def parse_front_matter(text: str) -> tuple[dict[str, str], str]:
+    """Split a page into its front matter and its body.
+
+    Only flat `key: value` lines are read — enough for the deck options below,
+    and it keeps the generator free of a YAML dependency.
+    """
+    match = FRONT_MATTER_RE.match(text)
+    if not match:
+        return {}, text
+
+    meta: dict[str, str] = {}
+    for line in match.group("body").split("\n"):
+        entry = META_LINE_RE.match(line)
+        if entry:
+            meta[entry.group("key")] = entry.group("value").strip().strip("\"'")
+    return meta, text[match.end() :]
 
 
 def rewrite_link(target: str) -> str:
@@ -178,18 +244,104 @@ def split_into_slides(text: str) -> list[str]:
     ]
 
 
-def to_marp_markdown(source: str) -> str:
-    text = strip_front_matter(source)
+def event_html(meta: dict[str, str]) -> str:
+    """Date and venue line for the title slide, if the page declares them."""
+    parts = [meta.get("event_date"), meta.get("event_venue")]
+    spans = "".join(f"<span>{escape(part)}</span>" for part in parts if part)
+    if not spans:
+        return ""
+    return f'\n\n<div class="td-event">{spans}</div>'
+
+
+def asset_prefix(relative: Path) -> str:
+    """Path prefix from a page back to `docs/`, as its Markdown links use."""
+    return "../" * len(relative.parent.parts)
+
+
+def profile_slide(meta: dict[str, str], relative: Path, classes: list[str]) -> str:
+    """Speaker slide generated from the page's front matter.
+
+    Written as HTML rather than Markdown because the layout is a two-column
+    grid — the theme styles `.td-profile-*`, this only fills it in.
+    """
+    prefix = asset_prefix(relative)
+
+    links = ""
+    for key, (icon, url_template) in SOCIAL_LINKS.items():
+        account = meta.get(key)
+        if not account:
+            continue
+        label = url_template.format(account=account)
+        links += (
+            '<div class="td-profile-link">'
+            f'<img class="td-social-icon" src="{prefix}{SOCIAL_ICON_DIR}/{icon}.svg"'
+            f' alt="{key}" />'
+            f"<span>{escape(label)}</span>"
+            "</div>"
+        )
+
+    name = meta.get("presenter_name", "")
+    role = meta.get("presenter_role", "")
+    photo = meta["profile_image"]
+
+    return (
+        f"<!-- _class: {' '.join(classes)} -->\n\n"
+        "<div>"
+        f'<p class="td-profile-name">{escape(name)}</p>'
+        f'<p class="td-profile-role">{escape(role)}</p>'
+        f"{links}"
+        "</div>\n"
+        f'<img class="td-profile-photo" src="{escape(photo, quote=True)}"'
+        f' alt="{escape(name)}" />'
+    )
+
+
+def to_marp_markdown(source: str, relative: Path) -> tuple[dict[str, str], str]:
+    meta, text = parse_front_matter(source)
     text = EDITOR_RE.sub(EDITOR_NOTE + "\n", text)
     text = convert_admonitions(text)
     text = LINK_RE.sub(lambda m: rewrite_link(m.group("target")), text)
 
+    # `_class` replaces the global class on that slide, so the title slide has
+    # to repeat the header logo class rather than only carrying `lead`.
+    deck_classes = [HEADER_LOGO_CLASS] if meta.get("header_logo") else []
+    title_classes = ["lead", *deck_classes]
+    if meta.get("title_logo"):
+        title_classes.append(TITLE_LOGO_CLASS)
+
+    theme = SLIDE_THEMES.get(meta.get("slide_theme", ""), THEME_NAME)
+
     slides = split_into_slides(text)
     if slides:
-        slides[0] = "<!-- _class: lead -->\n<!-- _paginate: false -->\n\n" + slides[0]
+        # Only a talk deck treats `##` as a section divider — a documentation
+        # page uses it for ordinary sections full of prose.
+        if theme == SLIDE_THEMES["presentation"]:
+            # Every other divider gets the alternate wash, so two sections in a
+            # row never look the same. CSS cannot count by class, hence here.
+            seen = 0
+            for index, slide in enumerate(slides[1:], start=1):
+                if not SECTION_RE.match(slide):
+                    continue
+                classes = [SECTION_CLASS, *deck_classes]
+                if seen % 2:
+                    classes.insert(1, SECTION_ALT_CLASS)
+                seen += 1
+                slides[index] = f"<!-- _class: {' '.join(classes)} -->\n\n{slide}"
 
-    front_matter = f"---\nmarp: true\ntheme: {THEME_NAME}\npaginate: true\n---\n"
-    return front_matter + "\n" + "\n\n---\n\n".join(slides) + "\n"
+        slides[0] = (
+            f"<!-- _class: {' '.join(title_classes)} -->\n"
+            "<!-- _paginate: false -->\n\n" + slides[0] + event_html(meta)
+        )
+        if meta.get("profile_image"):
+            slides.insert(
+                1, profile_slide(meta, relative, [PROFILE_CLASS, *deck_classes])
+            )
+
+    front_matter = f"---\nmarp: true\ntheme: {theme}\npaginate: true\n"
+    if deck_classes:
+        front_matter += f"class: {' '.join(deck_classes)}\n"
+    front_matter += "---\n"
+    return meta, front_matter + "\n" + "\n\n---\n\n".join(slides) + "\n"
 
 
 def page_url_for(relative: Path) -> str:
@@ -202,10 +354,17 @@ def page_url_for(relative: Path) -> str:
 # Documentation pages are written as prose, not as decks, so a section can
 # easily hold more than fits on a 1280x720 slide — Marpit clips the overflow.
 # This scales such slides down instead of losing their tail.
+#
+# Title, speaker and section slides are laid out by the theme (centred, or a
+# two-column grid), and re-parenting their children into the wrapper would
+# break that, so they are left alone — they are short by construction.
 AUTOFIT_SCRIPT = """
 <script>
 addEventListener("load", function () {
   document.querySelectorAll("section").forEach(function (section) {
+    if (section.classList.contains("lead") ||
+        section.classList.contains("td-section") ||
+        section.classList.contains("td-profile")) return;
     var fit = document.createElement("div");
     fit.className = "td-fit";
     while (section.firstChild) fit.appendChild(section.firstChild);
@@ -229,10 +388,37 @@ addEventListener("load", function () {
 """
 
 
-def inject_deck_chrome(html: str, href: str) -> str:
-    """Add the "back to page" link and the overflow auto-fit script."""
-    snippet = (
-        "<style>"
+def css_url(path: str) -> str:
+    escaped = path.replace("\\", "\\\\").replace('"', '\\"')
+    return f'url("{escaped}")'
+
+
+def logo_css(meta: dict[str, str]) -> str:
+    """Per-deck image URLs for the logos declared in a page's front matter.
+
+    `!important` is needed because Marp scopes the theme's selectors — the
+    scoped `section { background: #fff }` rule is more specific than anything
+    that can be written here, and its shorthand clears `background-image`.
+    """
+    rules = ""
+    header = meta.get("header_logo")
+    if header:
+        rules += (
+            f"section.{HEADER_LOGO_CLASS}::before"
+            f"{{background-image:{css_url(header)} !important}}"
+        )
+    title = meta.get("title_logo")
+    if title:
+        rules += (
+            f"section.{TITLE_LOGO_CLASS}"
+            f"{{background-image:{css_url(title)} !important}}"
+        )
+    return rules
+
+
+def inject_deck_chrome(html: str, href: str, meta: dict[str, str]) -> str:
+    """Add the "back to page" link, the deck logos and the auto-fit script."""
+    styles = (
         ".td-fit{width:100%}"
         "#td-back{position:fixed;top:12px;left:12px;z-index:9999;"
         "font:600 13px/1 system-ui,sans-serif;color:#fff;text-decoration:none;"
@@ -240,7 +426,9 @@ def inject_deck_chrome(html: str, href: str) -> str:
         "opacity:.35;transition:opacity .15s}"
         "#td-back:hover{opacity:1}"
         "@media print{#td-back{display:none}}"
-        "</style>"
+    ) + logo_css(meta)
+    snippet = (
+        f"<style>{styles}</style>"
         f'<a id="td-back" href="{href}">&larr; Back to page</a>' + AUTOFIT_SCRIPT
     )
     if "</body>" not in html:
@@ -276,13 +464,16 @@ def main() -> int:
         src_dir = tmp_path / "src"
         out_dir = tmp_path / "out"
 
+        deck_meta: dict[Path, dict[str, str]] = {}
         for page in pages:
             relative = page.relative_to(DOCS_DIR)
             target = src_dir / relative.with_name(f"{relative.stem}{SLIDE_SUFFIX}.md")
             target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_text(
-                to_marp_markdown(page.read_text(encoding="utf-8")), encoding="utf-8"
+            meta, markdown = to_marp_markdown(
+                page.read_text(encoding="utf-8"), relative
             )
+            deck_meta[relative] = meta
+            target.write_text(markdown, encoding="utf-8")
 
         result = subprocess.run(
             [
@@ -317,7 +508,9 @@ def main() -> int:
             deck = DOCS_DIR / relative.with_name(name)
             deck.write_text(
                 inject_deck_chrome(
-                    built.read_text(encoding="utf-8"), page_url_for(relative)
+                    built.read_text(encoding="utf-8"),
+                    page_url_for(relative),
+                    deck_meta[relative],
                 ),
                 encoding="utf-8",
             )

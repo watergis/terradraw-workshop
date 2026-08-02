@@ -71,6 +71,7 @@ nav = [
   ] },
   { "Presentations" = [
     "presentations/index.md",
+    { "FOSS4G 2026 Hiroshima" = "presentations/foss4g-2026.md" },
     { "FOSS4G Europe 2026" = "presentations/foss4g-europe-2026.md" },
     { "FOSS4G 2025 Auckland" = "presentations/foss4g-2025.md" },
     { "FOSS4G Europe 2025" = "presentations/foss4g-europe-2025.md" },
