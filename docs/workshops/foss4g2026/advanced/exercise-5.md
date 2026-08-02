@@ -4,9 +4,7 @@ Terra Draw provides comprehensive event handling following the [official events 
 
 ## Terra Draw Events
 
-Terra Draw dispatches the events `change`, `finish`, `select`, `deselect`
-and — since the undo/redo feature was added — `history` (covered in
-[Exercise 7](./exercise-7.md)).
+Terra Draw dispatches the events `change`, `finish`, `select`, `deselect` and — since the undo/redo feature was added — `history` (covered in [Exercise 7](./exercise-7.md)).
 
 You can listen to an event through the `on` method like so:
 
@@ -36,8 +34,7 @@ draw.on("change", (ids, type) => {
 ```
 
 !!! note
-    On a `delete` event the feature is already removed from the Terra Draw
-    store, so you cannot fetch deleted features by their IDs anymore.
+    On a `delete` event the feature is already removed from the Terra Draw store, so you cannot fetch deleted features by their IDs anymore.
 
 ### `finish` event
 
@@ -64,8 +61,7 @@ draw.on("finish", (id: string, context: { action: string, mode: string }) => {
 
 ### `select` / `deselect` events
 
-The `select` event is dispatched when a feature is selected by
-`TerraDrawSelectMode`, and `deselect` when it is deselected:
+The `select` event is dispatched when a feature is selected by `TerraDrawSelectMode`, and `deselect` when it is deselected:
 
 ```ts
 draw.on("select", (id: string) => {
@@ -79,9 +75,7 @@ draw.on("deselect", () => {
 
 ### Mode state
 
-You can also ask the Terra Draw instance what it is currently doing with
-`getModeState()`, which returns states such as `registered`, `started` or
-`drawing`. This is useful to make UI decisions based on the current activity:
+You can also ask the Terra Draw instance what it is currently doing with `getModeState()`, which returns states such as `registered`, `started` or `drawing`. This is useful to make UI decisions based on the current activity:
 
 ```ts
 console.log(draw.getMode());      // e.g. "polygon"
@@ -90,17 +84,13 @@ console.log(draw.getModeState()); // e.g. "drawing"
 
 ## Try it in the live editor
 
-Complete the four TODOs inside `map.once('load')`: log the `change` and
-`finish` events to the console, and show the selected feature's GeoJSON in
-the sidebar textarea. Open your browser's developer console (or watch the
-console strip under the preview) to see the logs.
+Complete the four TODOs inside `map.once('load')`: log the `change` and `finish` events to the console, and show the selected feature's GeoJSON in the sidebar textarea. Open your browser's developer console (or watch the console strip under the preview) to see the logs.
 
 <terra-draw-editor start="../../code/exercise-5/start.ts" answer="../../code/exercise-5/answer.ts" height="560"></terra-draw-editor>
 
 ## In the local SvelteKit template
 
-In the template, use a reactive `$state` variable bound to a `<textarea>`
-instead of setting the textarea value directly:
+In the template, use a reactive `$state` variable bound to a `<textarea>` instead of setting the textarea value directly:
 
 ```diff
 let draw: TerraDraw | undefined = $state();

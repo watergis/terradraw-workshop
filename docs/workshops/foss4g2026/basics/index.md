@@ -78,9 +78,7 @@ Currently the following drawing modes are supported by Terra Draw (as of v1.31):
 | Sensor | `TerraDrawSensorMode` | `sensor` |
 
 !!! tip "New in Terra Draw v1.31"
-    The **Polyline** mode is one of the newest additions: it starts like the
-    linestring mode, but clicking the first point again closes the shape into
-    a polygon. We will try it in [Exercise 2](./exercise-2.md).
+    The **Polyline** mode is one of the newest additions: it starts like the linestring mode, but clicking the first point again closes the shape into a polygon. We will try it in [Exercise 2](./exercise-2.md).
 
 See the [Modes](https://github.com/JamesLMilner/terra-draw/blob/main/guides/4.MODES.md) section in the official documentation.
 
@@ -114,9 +112,7 @@ map.once('load', () => {
 ```
 
 !!! note
-    In the live editors of this workshop, Terra Draw and the adapter are
-    already available — the `import` statements at the top of each exercise
-    work out of the box, no installation needed.
+    In the live editors of this workshop, Terra Draw and the adapter are already available — the `import` statements at the top of each exercise work out of the box, no installation needed.
 
 ## What's Next?
 

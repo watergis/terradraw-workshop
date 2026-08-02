@@ -1,8 +1,6 @@
 # Mapbox GL JS
 
-[Mapbox GL JS](https://docs.mapbox.com/mapbox-gl-js/) is the commercial
-library that MapLibre was originally forked from, so this is the easiest
-migration of all — the API is almost identical.
+[Mapbox GL JS](https://docs.mapbox.com/mapbox-gl-js/) is the commercial library that MapLibre was originally forked from, so this is the easiest migration of all — the API is almost identical.
 
 To use it locally:
 
@@ -14,8 +12,7 @@ pnpm install -D mapbox-gl terra-draw-mapbox-gl-adapter
 
 ### 1. Imports and access token
 
-Mapbox requires an access token
-([create a free one here](https://console.mapbox.com/)):
+Mapbox requires an access token ([create a free one here](https://console.mapbox.com/)):
 
 ```diff
 -import { Map } from 'maplibre-gl';
@@ -27,11 +24,7 @@ Mapbox requires an access token
 ```
 
 !!! info "About the token in this live editor"
-    The example below expects a token to be baked in when this site is
-    built (locally: set `MAPBOX_ACCESS_TOKEN` in `.env` and run
-    `uv run python scripts/generate_keys.py`; on Cloudflare Pages it comes
-    from a build environment variable). If no token was provided, the
-    preview shows a notice instead of a map.
+    The example below expects a token to be baked in when this site is built (locally: set `MAPBOX_ACCESS_TOKEN` in `.env` and run `uv run python scripts/generate_keys.py`; on Cloudflare Pages it comes from a build environment variable). If no token was provided, the preview shows a notice instead of a map.
 
 ### 2. Map creation
 

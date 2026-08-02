@@ -4,13 +4,9 @@ This section introduces a MapLibre plugin for easy integration with Terra Draw.
 
 ## maplibre-gl-terradraw
 
-Through the previous exercises you have now seen how Terra Draw works and how
-much control it gives you. However, you still need to write quite a lot of
-code to bring a full drawing UI to your map application.
+Through the previous exercises you have now seen how Terra Draw works and how much control it gives you. However, you still need to write quite a lot of code to bring a full drawing UI to your map application.
 
-[maplibre-gl-terradraw](https://github.com/watergis/maplibre-gl-terradraw)
-was developed for easy integration with MapLibre: it wraps Terra Draw in a
-standard MapLibre control with ready-made buttons.
+[maplibre-gl-terradraw](https://github.com/watergis/maplibre-gl-terradraw) was developed for easy integration with MapLibre: it wraps Terra Draw in a standard MapLibre control with ready-made buttons.
 
 ## Installation
 
@@ -32,16 +28,12 @@ map.addControl(drawControl, 'top-left');
 
 ## Try it in the live editor
 
-Add the control with your favourite selection of modes. The plugin supports
-all Terra Draw modes — including `polyline`, `undo` and `redo` buttons — plus
-extra buttons like `delete` and `download`.
+Add the control with your favourite selection of modes. The plugin supports all Terra Draw modes — including `polyline`, `undo` and `redo` buttons — plus extra buttons like `delete` and `download`.
 
 <terra-draw-editor start="../code/maplibre-gl-terradraw/start.ts" answer="../code/maplibre-gl-terradraw/answer.ts" height="500"></terra-draw-editor>
 
 !!! note
-    The plugin's stylesheet is already loaded in the live editor's preview.
-    In your own project, don't forget to import
-    `@watergis/maplibre-gl-terradraw/dist/maplibre-gl-terradraw.css`.
+    The plugin's stylesheet is already loaded in the live editor's preview. In your own project, don't forget to import `@watergis/maplibre-gl-terradraw/dist/maplibre-gl-terradraw.css`.
 
 ## Available controls
 
@@ -59,8 +51,7 @@ There are three controls available in the plugin:
 
 ## All Terra Draw APIs are accessible
 
-Through the plugin, all Terra Draw APIs are accessible via the plugin
-constructor and the `getTerraDrawInstance` method:
+Through the plugin, all Terra Draw APIs are accessible via the plugin constructor and the `getTerraDrawInstance` method:
 
 ```ts
 const drawControl = new MaplibreTerradrawControl({

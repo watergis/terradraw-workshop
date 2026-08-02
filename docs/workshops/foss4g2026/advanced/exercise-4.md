@@ -34,8 +34,7 @@ The `TerraDrawLineStringMode` is styled using the following properties:
 `TerraDrawFreehandLineStringMode` and `TerraDrawPolyLineMode` also share most of these styling properties.
 
 !!! tip "New in Terra Draw v1.30"
-    `lineStringDash` takes a tuple `[dashLength, gapLength]` in pixels, so
-    `[2, 2]` draws a dashed line and `[1, 3]` draws a dotted-looking one.
+    `lineStringDash` takes a tuple `[dashLength, gapLength]` in pixels, so `[2, 2]` draws a dashed line and `[1, 3]` draws a dotted-looking one.
 
 ## Polygon style
 
@@ -57,10 +56,7 @@ Other polygon drawing modes such as `TerraDrawFreehandMode`, `TerraDrawCircleMod
 
 ## Try it in the live editor
 
-Starting from the Exercise 3 code, add a `styles` object to each mode. The
-answer makes points white with a red outline, lines red / dashed /
-semi-transparent, and polygons white with a red outline — plus a custom
-selection style.
+Starting from the Exercise 3 code, add a `styles` object to each mode. The answer makes points white with a red outline, lines red / dashed / semi-transparent, and polygons white with a red outline — plus a custom selection style.
 
 <terra-draw-editor start="../../code/exercise-4/start.ts" answer="../../code/exercise-4/answer.ts" height="520"></terra-draw-editor>
 
@@ -111,9 +107,7 @@ draw = new TerraDraw({
 
 ## Custom style for Select mode
 
-However, styles when selecting features with `TerraDrawSelectMode` still use
-the default style. Add a `styles` property to your `TerraDrawSelectMode` like
-below:
+However, styles when selecting features with `TerraDrawSelectMode` still use the default style. Add a `styles` property to your `TerraDrawSelectMode` like below:
 
 ```ts
 new TerraDrawSelectMode({

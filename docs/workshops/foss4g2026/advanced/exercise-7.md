@@ -1,23 +1,15 @@
 # Exercise 7: Undo / Redo
 
-Undo/redo support was one of the most requested Terra Draw features and was
-added in **v1.26**. In this exercise we enable the history and wire it up to
-UI buttons and keyboard shortcuts.
+Undo/redo support was one of the most requested Terra Draw features and was added in **v1.26**. In this exercise we enable the history and wire it up to UI buttons and keyboard shortcuts.
 
 ## How Terra Draw history works
 
-The history is opt-in and configured through the `undoRedo` option of the
-`TerraDraw` constructor. It has two levels:
+The history is opt-in and configured through the `undoRedo` option of the `TerraDraw` constructor. It has two levels:
 
-- **Mode level** (`TerraDrawModeUndoRedo`): tracks the steps *while you are
-  drawing a feature* — for example, undoing removes the last coordinate you
-  clicked in polygon mode.
-- **Session level** (`TerraDrawSessionUndoRedo`): tracks *completed changes* —
-  for example, undoing removes the whole feature you just finished drawing.
+- **Mode level** (`TerraDrawModeUndoRedo`): tracks the steps *while you are drawing a feature* — for example, undoing removes the last coordinate you clicked in polygon mode.
+- **Session level** (`TerraDrawSessionUndoRedo`): tracks *completed changes* — for example, undoing removes the whole feature you just finished drawing.
 
-You can enable either or both. There is also an optional keyboard shortcut
-handler (`TerraDrawUndoRedoKeyboardShortcuts`) which by default binds
-`Ctrl/Cmd + Z` to undo and `Ctrl/Cmd + Shift + Z` to redo.
+You can enable either or both. There is also an optional keyboard shortcut handler (`TerraDrawUndoRedoKeyboardShortcuts`) which by default binds `Ctrl/Cmd + Z` to undo and `Ctrl/Cmd + Shift + Z` to redo.
 
 ```ts
 import {
@@ -50,8 +42,7 @@ Once enabled, the Terra Draw instance exposes the following methods:
 
 ## The `history` event
 
-Whenever the undo/redo stacks change, Terra Draw dispatches a `history`
-event. This is the right place to enable or disable your Undo/Redo buttons:
+Whenever the undo/redo stacks change, Terra Draw dispatches a `history` event. This is the right place to enable or disable your Undo/Redo buttons:
 
 ```ts
 draw.on('history', (event) => {
@@ -64,10 +55,7 @@ draw.on('history', (event) => {
 
 ## Try it in the live editor
 
-Complete the three TODOs: enable the history, add **Undo** / **Redo**
-buttons, and keep them in sync via the `history` event. Then draw a few
-polygons and try `Ctrl/Cmd + Z` while drawing (mode level) and after
-finishing a shape (session level).
+Complete the three TODOs: enable the history, add **Undo** / **Redo** buttons, and keep them in sync via the `history` event. Then draw a few polygons and try `Ctrl/Cmd + Z` while drawing (mode level) and after finishing a shape (session level).
 
 <terra-draw-editor start="../../code/exercise-7/start.ts" answer="../../code/exercise-7/answer.ts" height="520"></terra-draw-editor>
 
@@ -81,10 +69,8 @@ finishing a shape (session level).
 
 ### Extra challenge
 
-- Set `maxStackSize` to a small number like `3` and observe what happens to
-  older history entries.
-- Enable **only** the session level and observe how undo behaves while
-  drawing.
+- Set `maxStackSize` to a small number like `3` and observe what happens to older history entries.
+- Enable **only** the session level and observe how undo behaves while drawing.
 
 ## What's Next?
 
