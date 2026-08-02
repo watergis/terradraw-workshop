@@ -72,6 +72,8 @@ We mainly edit `src/routes/+page.svelte` during the workshop. It already contain
 - an empty `<aside class="sidebar">` is prepared for the buttons we will add
 - `+page.ts` disables server-side rendering (`export const ssr = false;`)
 
+---
+
 ??? example "Show the full initial +page.svelte"
 
     ```html

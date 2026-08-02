@@ -37,6 +37,8 @@ Terra Draw is built around four goals:
 
 *Terra Draw architecture. Slide from James Milner's [FOSS4G Europe 2026 talk](https://talks.osgeo.org/foss4g-europe-2026/talk/SVK98A/).*
 
+---
+
 Three concepts carry through every exercise in this workshop:
 
 | Concept | What it does |
@@ -64,6 +66,8 @@ We look at each concept in detail — and run this code for real — in [Core Co
 ![OpenLayers, Leaflet, ArcGIS Maps SDK for JavaScript, Google Maps Platform, Mapbox GL JS and MapLibre GL JS](./assets/introduction/supported-map-libraries.png)
 
 *The six mapping libraries Terra Draw supports. Slide from James Milner's [FOSS4G Europe 2026 talk](https://talks.osgeo.org/foss4g-europe-2026/talk/SVK98A/).*
+
+---
 
 Each library gets its own adapter package:
 

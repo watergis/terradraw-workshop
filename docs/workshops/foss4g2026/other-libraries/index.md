@@ -11,6 +11,8 @@ Everything you learned in this workshop was written against MapLibre GL JS — b
 | Google Maps JS API | `terra-draw-google-maps-adapter` | `TerraDrawGoogleMapsAdapter` |
 | ArcGIS JS SDK | `terra-draw-arcgis-adapter` | `TerraDrawArcGISMapsSDKAdapter` |
 
+---
+
 Each of the following pages shows the same small drawing app — the one you built in the exercises — running on a different mapping library, live in your browser:
 
 - **[Leaflet](./leaflet.md)** — a hands-on migration exercise we will do together in the workshop.

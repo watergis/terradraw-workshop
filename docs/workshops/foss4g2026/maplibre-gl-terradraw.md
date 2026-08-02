@@ -45,9 +45,15 @@ There are three controls available in the plugin:
 | MaplibreMeasureControl | Control for measuring distance, area and altitude |
 | MaplibreValhallaControl | Control for integrating with the Valhalla API (routing and isochrones) |
 
+---
+
 ![MaplibreMeasureControl for measuring distance, area and altitude](./assets/plugin-measure-control.png)
+_MaplibreMeasureControl for measuring distance, area and altitude_
+
+---
 
 ![MaplibreValhallaControl to integrate with Valhalla Routing and Isochrone API](./assets/plugin-valhalla-control.png)
+_MaplibreValhallaControl to integrate with Valhalla Routing and Isochrone API_
 
 ## All Terra Draw APIs are accessible
 

@@ -9,6 +9,8 @@ The history is opt-in and configured through the `undoRedo` option of the `Terra
 - **Mode level** (`TerraDrawModeUndoRedo`): tracks the steps *while you are drawing a feature* — for example, undoing removes the last coordinate you clicked in polygon mode.
 - **Session level** (`TerraDrawSessionUndoRedo`): tracks *completed changes* — for example, undoing removes the whole feature you just finished drawing.
 
+---
+
 You can enable either or both. There is also an optional keyboard shortcut handler (`TerraDrawUndoRedoKeyboardShortcuts`) which by default binds `Ctrl/Cmd + Z` to undo and `Ctrl/Cmd + Shift + Z` to redo.
 
 ```ts
@@ -29,6 +31,8 @@ const draw = new TerraDraw({
     }
 });
 ```
+
+---
 
 Once enabled, the Terra Draw instance exposes the following methods:
 

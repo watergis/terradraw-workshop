@@ -45,6 +45,8 @@ const draw = new TerraDraw({
 });
 ```
 
+---
+
 Remove `draw.setMode("rectangle");` so that we don't automatically start with any drawing tool:
 
 ```diff
@@ -66,6 +68,8 @@ const handleClearClick = () => {
     draw.clear();
 };
 ```
+
+---
 
 Finally add one button per mode. In the live editor this is done with the `addButton()` helper:
 

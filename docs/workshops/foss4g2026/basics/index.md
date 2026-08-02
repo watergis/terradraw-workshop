@@ -60,6 +60,8 @@ const renderMode = new TerraDrawRenderMode({
 });
 ```
 
+---
+
 Currently the following drawing modes are supported by Terra Draw (as of v1.31):
 
 | Mode | Class | Mode Name |
@@ -89,6 +91,8 @@ You can install Terra Draw into your local project like so:
 ```bash
 npm install terra-draw terra-draw-maplibre-gl-adapter
 ```
+
+---
 
 Once installed via NPM you can use Terra Draw in your project like so:
 

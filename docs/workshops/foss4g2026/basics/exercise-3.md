@@ -23,6 +23,8 @@ import {
 } from 'terra-draw';
 ```
 
+---
+
 Then add `TerraDrawSelectMode` to the `modes` array. The `flags` option controls what can be edited, per mode name:
 
 ```ts
@@ -74,6 +76,8 @@ new TerraDrawSelectMode({
 })
 ```
 
+---
+
 Finally add a **Select** button:
 
 ```ts
@@ -106,16 +110,12 @@ polygon: {
         rotateable: true, // you can rotate with ctrl+r (ctrl+command+r in mac)
         coordinates: {
             midpoints: true,
-
             // Can be moved
             draggable: true,
-
             // Can be deleted
             deletable: true,
-
             // Can snap to other coordinates from geometries _of the same mode_
             snappable: true,
-
             // Allow resizing of the geometry from a given origin.
             // center will allow resizing of the aspect ratio from the center
             // and opposite allows resizing from the opposite corner of the

@@ -17,6 +17,8 @@ import { TerraDraw, TerraDrawRectangleMode } from 'terra-draw';
 import { TerraDrawMapLibreGLAdapter } from 'terra-draw-maplibre-gl-adapter';
 ```
 
+---
+
 Then create a Terra Draw instance, connecting the map through the adapter and registering the rectangle mode:
 
 ```ts
@@ -28,6 +30,8 @@ const draw = new TerraDraw({
     modes: [new TerraDrawRectangleMode()],
 });
 ```
+
+---
 
 Finally, wait for MapLibre to load the map style, then start drawing:
 
