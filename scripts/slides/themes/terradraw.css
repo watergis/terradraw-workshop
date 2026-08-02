@@ -162,6 +162,41 @@ section td {
   padding: 0.35em 0.7em;
 }
 
+/* Embeds — the Presentations pages embed slide PDFs and talk recordings. The
+   site stylesheet is not loaded in a deck, so size them here instead: one
+   embed owns the whole slide below its heading. */
+
+section .pdf-embed,
+section .video-embed {
+  position: relative;
+  width: auto;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+section .video-embed {
+  height: 500px;
+  aspect-ratio: 16 / 9;
+}
+
+section .pdf-embed {
+  /* 16:9 slide plus room for the built-in PDF viewer toolbar */
+  height: 500px;
+  aspect-ratio: 16 / 10.4;
+  border: 1px solid var(--td-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+section .pdf-embed object,
+section .video-embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
 /* Chrome ------------------------------------------------------------------ */
 
 section::after {

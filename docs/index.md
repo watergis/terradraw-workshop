@@ -25,9 +25,7 @@ Terra Draw uses the concept of 'adapters' to allow it to work with a host of dif
 
 The official Terra Draw website can be found at [terradraw.io](https://www.terradraw.io/). If you are interested in contributing to the website please see [GitHub repository](https://www.github.com/JamesLMilner/terra-draw-website).
 
-## Workshops
+## Contents
 
-The following workshop materials are available:
-
-- [FOSS4G Hiroshima 2026](./workshops/foss4g2026/index.md)
-- [FOSS4G 2025 Auckland](./workshops/foss4g2025/index.md)
+- [Workshops](./workshops/index.md) - hands-on tutorial materials from FOSS4G conferences
+- [Presentations](./presentations/index.md) - conference talks and slide decks
