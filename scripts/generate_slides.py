@@ -388,6 +388,25 @@ addEventListener("load", function () {
 """
 
 
+# The deck is also embedded in an iframe as a preview on its talk page. There
+# the link back to that very page is noise, so it is dropped when framed.
+BACK_LINK_SCRIPT = """
+<script>
+(function () {
+  var framed = false;
+  try {
+    framed = window.self !== window.top;
+  } catch (e) {
+    framed = true;
+  }
+  if (!framed) return;
+  var back = document.getElementById("td-back");
+  if (back) back.remove();
+})();
+</script>
+"""
+
+
 def css_url(path: str) -> str:
     escaped = path.replace("\\", "\\\\").replace('"', '\\"')
     return f'url("{escaped}")'
@@ -429,7 +448,9 @@ def inject_deck_chrome(html: str, href: str, meta: dict[str, str]) -> str:
     ) + logo_css(meta)
     snippet = (
         f"<style>{styles}</style>"
-        f'<a id="td-back" href="{href}">&larr; Back to page</a>' + AUTOFIT_SCRIPT
+        f'<a id="td-back" href="{href}">&larr; Back to page</a>'
+        + BACK_LINK_SCRIPT
+        + AUTOFIT_SCRIPT
     )
     if "</body>" not in html:
         return html + snippet
