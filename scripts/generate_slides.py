@@ -64,6 +64,7 @@ Generated decks are gitignored; `scripts/build.sh` runs the whole pipeline.
 
 from __future__ import annotations
 
+import argparse
 import re
 import subprocess
 import sys
@@ -73,6 +74,11 @@ from html import escape
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+I18N_DIR = ROOT / "i18n"
+
+# Which documentation tree to build decks for. `--docs-dir` points this at a
+# staged translation tree (build/i18n/<lang>/docs, see scripts/build_i18n.py) so
+# each language gets its own decks.
 DOCS_DIR = ROOT / "docs"
 THEMES_DIR = ROOT / "scripts" / "slides" / "themes"
 MARP_BIN = ROOT / "scripts" / "slides" / "node_modules" / ".bin" / "marp"
@@ -477,7 +483,35 @@ def remove_stale_decks() -> None:
         deck.unlink()
 
 
+def is_translation(path: Path) -> bool:
+    """True for a `<name>.<lang>.md` translation source.
+
+    Translations are not pages in their own right — `scripts/build_i18n.py`
+    moves them over their English counterpart in the staged tree, which is what
+    gets decks. Building one from `docs/` directly would emit a deck the site
+    never links to.
+    """
+    lang = Path(path.stem).suffix.lstrip(".")
+    return bool(lang) and (I18N_DIR / f"{lang}.toml").is_file()
+
+
 def main() -> int:
+    global DOCS_DIR
+
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument(
+        "--docs-dir",
+        type=Path,
+        default=DOCS_DIR,
+        help="documentation tree to generate decks for (default: docs/)",
+    )
+    args = parser.parse_args()
+
+    DOCS_DIR = args.docs_dir.resolve()
+    if not DOCS_DIR.is_dir():
+        print(f"No such docs directory: {args.docs_dir}", file=sys.stderr)
+        return 1
+
     if not MARP_BIN.exists():
         print(
             f"Marp CLI not found at {MARP_BIN.relative_to(ROOT)}.\n"
@@ -487,10 +521,12 @@ def main() -> int:
         return 1
 
     pages = sorted(
-        path for path in DOCS_DIR.rglob("*.md") if not path.stem.endswith(SLIDE_SUFFIX)
+        path
+        for path in DOCS_DIR.rglob("*.md")
+        if not path.stem.endswith(SLIDE_SUFFIX) and not is_translation(path)
     )
     if not pages:
-        print("No Markdown pages found under docs/")
+        print(f"No Markdown pages found under {DOCS_DIR.relative_to(ROOT)}/")
         return 0
 
     remove_stale_decks()
@@ -551,7 +587,7 @@ def main() -> int:
                 encoding="utf-8",
             )
 
-    print(f"Wrote {len(pages)} slide decks under docs/")
+    print(f"Wrote {len(pages)} slide decks under {DOCS_DIR.relative_to(ROOT)}/")
     return 0
 
 

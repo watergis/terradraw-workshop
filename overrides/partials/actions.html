@@ -28,7 +28,10 @@
       recovered by stripping the edit_uri prefix off page.edit_url. -#}
   {% if config.edit_uri and config.edit_uri in page.edit_url %}
     {% set source = page.edit_url | replace(config.edit_uri ~ "/", "") %}
-    <a href="{{ source | replace('.md', '_slide.html') | url }}" title="Switch to presentation mode" class="md-content__button md-icon">
+    {#- Zensical's own catalog has no key for this button, so the label comes
+        from `extra.ui` — English in zensical.toml, replaced per language from
+        i18n/<lang>.toml's [ui] table by scripts/build_i18n.py. -#}
+    <a href="{{ source | replace('.md', '_slide.html') | url }}" title="{{ config.extra.ui.slides }}" class="md-content__button md-icon">
       {% set icon = config.theme.icon.slides or "material/projector-screen-outline" %}
       {% include ".icons/" ~ icon ~ ".svg" %}
     </a>

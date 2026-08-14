@@ -210,6 +210,57 @@ const ICON_MAXIMIZE =
 const ICON_MINIMIZE =
   '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>';
 
+// Widget UI strings, keyed by the `lang` attribute Zensical writes on <html>.
+// The site is built once per language (see scripts/build_i18n.py), so the page
+// language is fixed at load time. English is the fallback for any language
+// without an entry here — add one alongside a new `i18n/<lang>.toml`.
+const STRINGS = {
+  en: {
+    tabExercise: 'Exercise',
+    tabAnswer: 'Answer',
+    copyAnswer: 'Copy answer to editor',
+    copyAnswerTitle: 'Replace the exercise code with the answer',
+    reset: 'Reset',
+    resetTitle: 'Restore the starter code',
+    run: 'Run ▶',
+    runTitle: 'Run the code (Ctrl/Cmd + Enter)',
+    maximize: 'Maximize the editor',
+    exitFullscreen: 'Exit fullscreen',
+    splitter: 'Drag to resize',
+    loading: 'Loading editor…',
+    confirmReset: 'Discard your changes and restore the starter code?',
+    confirmCopyAnswer: 'Replace your exercise code with the answer?'
+  },
+  ja: {
+    tabExercise: '演習',
+    tabAnswer: '解答',
+    copyAnswer: '解答をエディタにコピー',
+    copyAnswerTitle: '演習のコードを解答で置き換えます',
+    reset: 'リセット',
+    resetTitle: '最初のコードに戻します',
+    run: '実行 ▶',
+    runTitle: 'コードを実行します (Ctrl/Cmd + Enter)',
+    maximize: 'エディタを最大化',
+    exitFullscreen: '全画面表示を終了',
+    splitter: 'ドラッグしてサイズを変更',
+    loading: 'エディタを読み込み中…',
+    confirmReset: '変更を破棄して最初のコードに戻しますか?',
+    confirmCopyAnswer: '演習のコードを解答で置き換えますか?'
+  }
+};
+
+const LANG = (document.documentElement.lang || 'en').split('-')[0];
+
+/** Look up a UI string for the page language, falling back to English. */
+function t(key) {
+  return (STRINGS[LANG] || STRINGS.en)[key] ?? STRINGS.en[key];
+}
+
+/** Escape a string for safe interpolation into an HTML attribute. */
+function attr(value) {
+  return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
 let instanceCounter = 0;
 
 class TerraDrawEditor extends HTMLElement {
@@ -267,22 +318,22 @@ class TerraDrawEditor extends HTMLElement {
     this.innerHTML = `
       <div class="tde-toolbar">
         <div class="tde-tabs" role="tablist">
-          <button type="button" class="tde-tab tde-tab-active" data-tab="exercise" role="tab">Exercise</button>
-          <button type="button" class="tde-tab" data-tab="answer" role="tab" hidden>Answer</button>
+          <button type="button" class="tde-tab tde-tab-active" data-tab="exercise" role="tab">${t('tabExercise')}</button>
+          <button type="button" class="tde-tab" data-tab="answer" role="tab" hidden>${t('tabAnswer')}</button>
         </div>
         <div class="tde-actions">
-          <button type="button" class="tde-btn tde-copy-answer" hidden title="Replace the exercise code with the answer">Copy answer to editor</button>
-          <button type="button" class="tde-btn tde-reset" title="Restore the starter code">Reset</button>
-          <button type="button" class="tde-btn tde-run" title="Run the code (Ctrl/Cmd + Enter)">Run ▶</button>
-          <button type="button" class="tde-btn tde-icon-btn tde-maximize" title="Maximize the editor" aria-label="Maximize the editor">${ICON_MAXIMIZE}</button>
+          <button type="button" class="tde-btn tde-copy-answer" hidden title="${attr(t('copyAnswerTitle'))}">${t('copyAnswer')}</button>
+          <button type="button" class="tde-btn tde-reset" title="${attr(t('resetTitle'))}">${t('reset')}</button>
+          <button type="button" class="tde-btn tde-run" title="${attr(t('runTitle'))}">${t('run')}</button>
+          <button type="button" class="tde-btn tde-icon-btn tde-maximize" title="${attr(t('maximize'))}" aria-label="${attr(t('maximize'))}">${ICON_MAXIMIZE}</button>
         </div>
       </div>
       <div class="tde-body" style="height:${Number(height)}px">
         <div class="tde-editor">
-          <div class="tde-editor-pane" data-pane="exercise"><div class="tde-loading">Loading editor…</div></div>
+          <div class="tde-editor-pane" data-pane="exercise"><div class="tde-loading">${t('loading')}</div></div>
           <div class="tde-editor-pane tde-hidden" data-pane="answer"></div>
         </div>
-        <div class="tde-splitter" role="separator" aria-orientation="vertical" title="Drag to resize"></div>
+        <div class="tde-splitter" role="separator" aria-orientation="vertical" title="${attr(t('splitter'))}"></div>
         <div class="tde-preview">
           <div class="tde-frame-host"></div>
         </div>
@@ -410,7 +461,7 @@ class TerraDrawEditor extends HTMLElement {
     if (!btn) return;
     const isFull = document.fullscreenElement === this;
     btn.innerHTML = isFull ? ICON_MINIMIZE : ICON_MAXIMIZE;
-    const label = isFull ? 'Exit fullscreen' : 'Maximize the editor';
+    const label = isFull ? t('exitFullscreen') : t('maximize');
     btn.title = label;
     btn.setAttribute('aria-label', label);
   }
@@ -575,7 +626,7 @@ ${boilerplate}
 
   reset() {
     if (!this.exerciseView) return;
-    if (!window.confirm('Discard your changes and restore the starter code?')) return;
+    if (!window.confirm(t('confirmReset'))) return;
     this.setExerciseDoc(this.startCode);
     sessionStorage.removeItem(this.storageKey);
     sessionStorage.removeItem(this.baselineKey);
@@ -584,7 +635,7 @@ ${boilerplate}
 
   copyAnswer() {
     if (!this.answerCode) return;
-    if (!window.confirm('Replace your exercise code with the answer?')) return;
+    if (!window.confirm(t('confirmCopyAnswer'))) return;
     this.setExerciseDoc(this.answerCode);
     this.switchTab('exercise');
   }

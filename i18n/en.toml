@@ -1,0 +1,16 @@
+# English translation catalog — the default language, served from the site root.
+#
+# English is the source language, so there is nothing to translate: the values
+# below simply restate what `zensical.toml` already declares, and there is no
+# `[nav]` table because the nav titles in `zensical.toml` are already English.
+#
+# This file exists so English is staged by `scripts/build_i18n.py` like every
+# other language. Zensical cannot exclude files from a build, so building
+# `docs/` directly would publish each `<name>.<lang>.md` as an extra page in the
+# English site; staging strips them.
+
+site_name = "Terra Draw Tutorials"
+site_description = "This is tutorial documentation for Terra Draw drawing library for all mapping applications."
+
+[ui]
+slides = "Switch to presentation mode"

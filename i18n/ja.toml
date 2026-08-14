@@ -1,0 +1,71 @@
+# Japanese translation catalog.
+#
+# Page bodies are NOT translated here — they live next to their English source
+# as `docs/**/XXX.ja.md`. This file only holds the strings that come from
+# configuration or from the theme: the site metadata, the navigation titles
+# declared in `zensical.toml`, and the UI labels used by `overrides/`.
+#
+# `scripts/build_i18n.py` reads this file, applies it to `zensical.toml` and
+# writes the generated per-language config to `build/i18n/ja/zensical.toml`.
+
+site_name = "Terra Draw チュートリアル"
+site_description = "あらゆる地図アプリケーションで使える描画ライブラリ Terra Draw のチュートリアルドキュメントです。"
+
+# ----------------------------------------------------------------------------
+# Navigation titles
+#
+# Keys are the exact English titles used in `zensical.toml`'s `nav`. Entries
+# written there as a bare path (e.g. "workshops/index.md") take their title from
+# the page heading, so they are translated by the page's `.ja.md` instead and
+# must not be listed here.
+# ----------------------------------------------------------------------------
+[nav]
+"Home" = "ホーム"
+"Workshops" = "ワークショップ"
+"Presentations" = "発表資料"
+"Supporting" = "サポート"
+
+"FOSS4G Hiroshima 2026" = "FOSS4G 広島 2026"
+"FOSS4G 2026 Workshop" = "FOSS4G 2026 ワークショップ"
+"Terra Draw Introduction" = "Terra Draw とは"
+"Getting started" = "はじめよう"
+"MapLibre GL JS v5 to v6" = "MapLibre GL JS v5 から v6 へ"
+"Terra Draw Basics" = "Terra Draw の基本"
+"Exercise 1 Without UI" = "演習 1 UI なし"
+"Exercise 2 With UI" = "演習 2 UI あり"
+"Exercise 3 With Select mode" = "演習 3 選択モード"
+"Advanced Features" = "応用機能"
+"Exercise 4 Custom Styling" = "演習 4 スタイルのカスタマイズ"
+"Exercise 5 Event Handling" = "演習 5 イベント処理"
+"Exercise 6 Data Management" = "演習 6 データ管理"
+"Exercise 7 Undo / Redo" = "演習 7 元に戻す / やり直す"
+"Maplibre Terra Draw plugin" = "MapLibre Terra Draw プラグイン"
+"Other mapping libraries" = "他の地図ライブラリ"
+"Q&A" = "質疑応答"
+
+"FOSS4G 2025 Auckland" = "FOSS4G 2025 オークランド"
+"FOSS4G 2025 Workshop" = "FOSS4G 2025 ワークショップ"
+"Exercise 6  Data Management" = "演習 6 データ管理"
+"Leaflet intergartion" = "Leaflet との連携"
+
+"FOSS4G 2026 Hiroshima" = "FOSS4G 2026 広島"
+"FOSS4G Europe 2026" = "FOSS4G Europe 2026"
+"FOSS4G Europe 2025" = "FOSS4G Europe 2025"
+"Supporting Terra Draw" = "Terra Draw を支援する"
+
+# ----------------------------------------------------------------------------
+# UI labels
+#
+# Zensical ships its own Japanese catalog for the built-in chrome
+# (`templates/partials/languages/ja.html`), so only the strings this repository
+# adds itself need translating here. They are exposed to the templates as
+# `config.extra.ui.*`. The live editor widget carries its own string table
+# keyed on `<html lang>` (see `docs/assets/live-editor/live-editor.js`).
+# ----------------------------------------------------------------------------
+[ui]
+slides = "プレゼンモードに切り替え"
+
+# Light/dark toggle labels, matched against `theme.palette[].toggle.name`.
+[palette]
+"Switch to dark mode" = "ダークモードに切り替え"
+"Switch to light mode" = "ライトモードに切り替え"
