@@ -34,12 +34,18 @@ repository (Zensical static site, `docs/` → `site/`).
 | `docs/workshops/foss4g2025/` | 2025 materials — reference only, never modify |
 | `docs/assets/live-editor/` | Reusable live-editor widget (JS/CSS) |
 | `zensical.toml` | Site config and nav — add 2026 pages to `nav` |
+| `docs/**/*.ja.md` | Japanese translations — see the `multilingual-docs` skill |
+| `i18n/ja.toml` | Japanese nav titles and UI labels (new nav entries go here too) |
 | `references/implementation-plan.md` | Full phased implementation plan |
 | `references/other-libraries-plan.md` | Plan for the per-library "Other mapping libraries" pages (Leaflet/OpenLayers/Mapbox/Google/ArcGIS live editors, API-key build injection) |
 
 ## Rules
 
-1. **Write all workshop content and code comments in English.**
+1. **Author all workshop content and code comments in English first.** English
+   is the source of truth. The site is also published in Japanese from sibling
+   `XXX.ja.md` files — after an English page settles, update its translation
+   following the `multilingual-docs` skill. Code and code comments stay English
+   in every language.
 2. Follow the page style of the 2025 materials: one exercise per page, short
    intro, incremental code blocks, screenshot of the expected result, a
    "What's Next?" closing section.
@@ -51,8 +57,10 @@ repository (Zensical static site, `docs/` → `site/`).
    getting-started. Keep the code identical apart from the framework glue.
 5. Keep plain fenced code blocks alongside the widget (`content.code.copy` is
    enabled) so attendees with restrictive networks can still follow along.
-6. After content changes, build with `uv run zensical build` (or
-   `uv run zensical serve` for preview) and confirm no nav warnings.
+6. After content changes, run `make build` (or `make serve` to preview) and
+   confirm every language reports `No issues found`. Do not use
+   `uv run zensical serve` — it builds English only and shows the `*.ja.md`
+   sources as stray pages.
 7. Never edit files under `site/` — it is build output.
 8. Do not modify `docs/workshops/foss4g2025/**`; copy pages into
    `foss4g2026/` and edit the copies.
