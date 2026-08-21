@@ -133,6 +133,16 @@ top-level page like `maplibre-gl-terradraw.md` use `../code/...`.
   (ICON_MAXIMIZE ↔ ICON_MINIMIZE). Note: the embedded preview webview blocks
   the Fullscreen API ("Permissions check failed") — verify this feature in a
   real browser tab, not the preview tool.
+- **Font size**: a `− 100% +` control in the toolbar scales the code panes in
+  5% steps between 50% and 200%; clicking the percentage resets it to 100%.
+  The scale is written as `--tde-font-scale` on `<html>` and the pane rule is
+  `font-size: calc(0.7rem * var(--tde-font-scale, 1))`, so one setting covers
+  every widget on the page; it persists in `localStorage`
+  (`terra-draw-editor:font-scale`). Do not declare `--tde-font-scale` on
+  `terra-draw-editor.tde` — that would shadow the inherited value. Toolbar and
+  console font sizes are deliberately left fixed. `syncFontSizeControls()`
+  updates the label, the disabled state at the limits, and calls
+  `requestMeasure()` on both views (CodeMirror caches character metrics).
 - **State**: user edits are saved to `sessionStorage` keyed by the resolved
   start-file URL on each Run. Reset (with confirm) restores the starter code.
 - **Lazy init** via IntersectionObserver; multiple widgets per page work.

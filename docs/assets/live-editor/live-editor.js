@@ -209,6 +209,10 @@ const ICON_MAXIMIZE =
   '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>';
 const ICON_MINIMIZE =
   '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>';
+const ICON_FONT_DECREASE =
+  '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5 11h14v2H5z"/></svg>';
+const ICON_FONT_INCREASE =
+  '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>';
 
 // Widget UI strings, keyed by the `lang` attribute Zensical writes on <html>.
 // The site is built once per language (see scripts/build_i18n.py), so the page
@@ -225,6 +229,9 @@ const STRINGS = {
     run: 'Run ▶',
     runTitle: 'Run the code (Ctrl/Cmd + Enter)',
     maximize: 'Maximize the editor',
+    fontDecrease: 'Decrease font size',
+    fontIncrease: 'Increase font size',
+    fontReset: 'Reset font size to 100%',
     exitFullscreen: 'Exit fullscreen',
     splitter: 'Drag to resize',
     loading: 'Loading editor…',
@@ -241,6 +248,9 @@ const STRINGS = {
     run: '実行 ▶',
     runTitle: 'コードを実行します (Ctrl/Cmd + Enter)',
     maximize: 'エディタを最大化',
+    fontDecrease: '文字を小さく',
+    fontIncrease: '文字を大きく',
+    fontReset: '文字サイズを100%に戻す',
     exitFullscreen: '全画面表示を終了',
     splitter: 'ドラッグしてサイズを変更',
     loading: 'エディタを読み込み中…',
@@ -263,8 +273,53 @@ function attr(value) {
 
 let instanceCounter = 0;
 
+// Code-pane font size. One setting for the whole site: the scale is written as
+// a custom property on <html> (live-editor.css multiplies the pane font size by
+// it), so every widget on the page follows it, and it is persisted so it
+// survives reloads and page navigation.
+const FONT_SCALE_KEY = 'terra-draw-editor:font-scale';
+const FONT_SCALE_MIN = 0.5;
+const FONT_SCALE_MAX = 2;
+const FONT_SCALE_STEP = 0.05;
+
+/** Every connected widget, so a change in one updates the others' controls. */
+const editors = new Set();
+
+function clampFontScale(value) {
+  if (!Number.isFinite(value)) return 1;
+  // Snap to the 5% grid so repeated steps never drift on floating-point error.
+  const snapped = Math.round(value * 20) / 20;
+  return Math.min(FONT_SCALE_MAX, Math.max(FONT_SCALE_MIN, snapped));
+}
+
+function readStoredFontScale() {
+  try {
+    const stored = localStorage.getItem(FONT_SCALE_KEY);
+    return stored === null ? 1 : clampFontScale(Number(stored));
+  } catch {
+    // Storage can be unavailable (private mode, blocked cookies).
+    return 1;
+  }
+}
+
+let fontScale = readStoredFontScale();
+
+function applyFontScale(value) {
+  fontScale = clampFontScale(value);
+  document.documentElement.style.setProperty('--tde-font-scale', String(fontScale));
+  try {
+    localStorage.setItem(FONT_SCALE_KEY, String(fontScale));
+  } catch {
+    // Ignore: the size still applies for this page view.
+  }
+  editors.forEach((editor) => editor.syncFontSizeControls());
+}
+
+applyFontScale(fontScale);
+
 class TerraDrawEditor extends HTMLElement {
   connectedCallback() {
+    editors.add(this);
     if (this.dataset.initialized) return;
     this.dataset.initialized = 'true';
     this.tdeId = `tde-${++instanceCounter}`;
@@ -278,6 +333,10 @@ class TerraDrawEditor extends HTMLElement {
       }
     });
     observer.observe(this);
+  }
+
+  disconnectedCallback() {
+    editors.delete(this);
   }
 
   get startUrl() {
@@ -322,6 +381,11 @@ class TerraDrawEditor extends HTMLElement {
           <button type="button" class="tde-tab" data-tab="answer" role="tab" hidden>${t('tabAnswer')}</button>
         </div>
         <div class="tde-actions">
+          <div class="tde-font-size">
+            <button type="button" class="tde-btn tde-icon-btn tde-font-dec" title="${attr(t('fontDecrease'))}" aria-label="${attr(t('fontDecrease'))}">${ICON_FONT_DECREASE}</button>
+            <button type="button" class="tde-btn tde-font-value" title="${attr(t('fontReset'))}" aria-label="${attr(t('fontReset'))}"></button>
+            <button type="button" class="tde-btn tde-icon-btn tde-font-inc" title="${attr(t('fontIncrease'))}" aria-label="${attr(t('fontIncrease'))}">${ICON_FONT_INCREASE}</button>
+          </div>
           <button type="button" class="tde-btn tde-copy-answer" hidden title="${attr(t('copyAnswerTitle'))}">${t('copyAnswer')}</button>
           <button type="button" class="tde-btn tde-reset" title="${attr(t('resetTitle'))}">${t('reset')}</button>
           <button type="button" class="tde-btn tde-run" title="${attr(t('runTitle'))}">${t('run')}</button>
@@ -346,6 +410,10 @@ class TerraDrawEditor extends HTMLElement {
     this.querySelectorAll('.tde-tab').forEach((btn) =>
       btn.addEventListener('click', () => this.switchTab(btn.dataset.tab))
     );
+    this.querySelector('.tde-font-dec').addEventListener('click', () => applyFontScale(fontScale - FONT_SCALE_STEP));
+    this.querySelector('.tde-font-inc').addEventListener('click', () => applyFontScale(fontScale + FONT_SCALE_STEP));
+    this.querySelector('.tde-font-value').addEventListener('click', () => applyFontScale(1));
+    this.syncFontSizeControls();
     this.querySelector('.tde-maximize').addEventListener('click', () => this.toggleFullscreen());
     document.addEventListener('fullscreenchange', () => this.syncFullscreenButton());
     this.setupSplitter();
@@ -464,6 +532,19 @@ class TerraDrawEditor extends HTMLElement {
     const label = isFull ? t('exitFullscreen') : t('maximize');
     btn.title = label;
     btn.setAttribute('aria-label', label);
+  }
+
+  syncFontSizeControls() {
+    const value = this.querySelector('.tde-font-value');
+    if (!value) return;
+    value.textContent = `${Math.round(fontScale * 100)}%`;
+    // Compare with a small epsilon: the scale is a rounded float.
+    this.querySelector('.tde-font-dec').disabled = fontScale <= FONT_SCALE_MIN + 1e-9;
+    this.querySelector('.tde-font-inc').disabled = fontScale >= FONT_SCALE_MAX - 1e-9;
+    // CodeMirror caches character metrics, so it has to re-measure after the
+    // font size changes (no-op before the views exist).
+    this.exerciseView?.requestMeasure();
+    this.answerView?.requestMeasure();
   }
 
   setupSplitter() {

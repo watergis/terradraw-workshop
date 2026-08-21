@@ -118,6 +118,16 @@ terra-draw-editor.tde {
   color: var(--md-accent-fg-color, #526cfe);
 }
 
+.tde-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.tde-btn:disabled:hover {
+  border-color: var(--md-default-fg-color--lighter, #bbb);
+  color: var(--md-typeset-color, #000);
+}
+
 .tde-run {
   border-color: var(--md-primary-fg-color, #3f51b5);
   background: var(--md-primary-fg-color, #3f51b5);
@@ -127,6 +137,22 @@ terra-draw-editor.tde {
 .tde-run:hover {
   color: var(--md-primary-bg-color, #fff);
   opacity: 0.85;
+}
+
+.tde-font-size {
+  display: inline-flex;
+  /* stretch: the +/- icon buttons match the height of the percentage button */
+  align-items: stretch;
+  gap: 2px;
+}
+
+/* Fixed width with tabular figures so the toolbar does not shift as the
+   percentage changes. */
+.tde-font-value {
+  min-width: 3.6em;
+  padding: 4px 6px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 
 .tde-icon-btn {
@@ -182,7 +208,9 @@ terra-draw-editor.tde:fullscreen .tde-body {
 
 .tde-editor-pane .cm-editor {
   height: 100%;
-  font-size: 0.7rem;
+  /* --tde-font-scale is set on <html> by the toolbar's font-size control
+     (see live-editor.js), so one setting applies to every widget. */
+  font-size: calc(0.7rem * var(--tde-font-scale, 1));
   background-color: var(--tde-cm-bg);
   color: var(--tde-cm-fg);
 }
@@ -443,6 +471,10 @@ terra-draw-editor.tde:fullscreen .tde-body {
 
 /* Stack panes vertically on narrow screens */
 @media (max-width: 900px) {
+  .tde-toolbar {
+    flex-wrap: wrap;
+  }
+
   .tde-body {
     flex-direction: column;
   }
