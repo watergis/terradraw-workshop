@@ -9,14 +9,14 @@ importers:
   .:
     dependencies:
       maplibre-gl:
-        specifier: ^6.1.0
-        version: 6.1.0
+        specifier: ^6.5.0
+        version: 6.5.0
       terra-draw:
-        specifier: 1.32.2
+        specifier: ^1.32.2
         version: 1.32.2
       terra-draw-maplibre-gl-adapter:
-        specifier: 1.4.1
-        version: 1.4.1(maplibre-gl@6.1.0)(terra-draw@1.32.2)
+        specifier: ^1.4.1
+        version: 1.4.1(maplibre-gl@6.5.0)(terra-draw@1.32.2)
     devDependencies:
       '@sveltejs/adapter-auto':
         specifier: ^7.0.1
@@ -28,8 +28,8 @@ importers:
         specifier: ^7.2.0
         version: 7.2.0(svelte@5.56.8)(vite@8.2.0)
       '@watergis/maplibre-gl-terradraw':
-        specifier: ^1.15.2
-        version: 1.15.2(maplibre-gl@6.1.0)(terra-draw-maplibre-gl-adapter@1.4.1(maplibre-gl@6.1.0)(terra-draw@1.32.2))(terra-draw@1.32.2)
+        specifier: ^1.15.3
+        version: 1.15.3(maplibre-gl@6.5.0)(terra-draw-maplibre-gl-adapter@1.4.1(maplibre-gl@6.5.0)(terra-draw@1.32.2))(terra-draw@1.32.2)
       svelte:
         specifier: ^5.56.8
         version: 5.56.8
@@ -93,8 +93,8 @@ packages:
     resolution: {integrity: sha512-QFKCXkOeSzOr8jF75jm6kySOg+dUvOehPhRi68gcOYPHb7U5JloUq0dJW0Y5/fZV8ygfT0Vp2RWodvq+fyxFWA==}
     hasBin: true
 
-  '@maplibre/mlt@1.1.12':
-    resolution: {integrity: sha512-ZeK5w2TTeHOajcLaEQs1KZXw2V9wIKo1PmThlxlsHoXsQsYlBqLJzPOd6tJHRtGTChUY3DPPmjXRArYVvAbmZw==}
+  '@maplibre/mlt@1.2.0':
+    resolution: {integrity: sha512-g45M8gEI4sMO3X9ib4K7n3ZKFf0qQOL+NMkHCnEK51lOrYFHiEssOuZncx1+miIgi1IEE2NcbRMcq8RBkL+QHA==}
 
   '@maplibre/vt-pbf@4.3.2':
     resolution: {integrity: sha512-j6p0AdjvAR19Z3XaCysle7A4ZSo08tYOzxD0Y9NQylwPAkwJJeYub5b2eVucdeDh7erhv69DahoLOevDRERRUw==}
@@ -264,8 +264,8 @@ packages:
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
 
-  '@watergis/maplibre-gl-terradraw@1.15.2':
-    resolution: {integrity: sha512-0LgfXvuoxNXrDEyk6J0yxTuFih+xXfpGYIzpCePvHfsHqJVptxIyKa+an0ExxoFESim6udBPfPda5J/3avf7/w==}
+  '@watergis/maplibre-gl-terradraw@1.15.3':
+    resolution: {integrity: sha512-lrBoSuCIIrJ/53Hi5o7HQzWeePSAkj1sMe+bsYjkaavuI3nmuYaQo/pDRAML0a0yTk0/omcJOmmrp4+rBZldjA==}
     engines: {pnpm: ^11.0.0}
     peerDependencies:
       maplibre-gl: ^4.0.0 || ^5.0.0 || ^6.0.0
@@ -438,8 +438,8 @@ packages:
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
 
-  maplibre-gl@6.1.0:
-    resolution: {integrity: sha512-vLRukjvbUai4SXW2/jKo8rPsw6YMXuA/b4fKFVSulZKFVRHkOvk4ZmNlDSVZpTYPV0/7/iTqq8ltYdyr764b7w==}
+  maplibre-gl@6.5.0:
+    resolution: {integrity: sha512-kVStPz9Rw/ATjWV5tQ3iCR0tY+viz16Nh3E14iZNlBj0HloMAzFaDNtFYqPGkZSFRnv56txMh3ImjR0g6oClTw==}
     engines: {node: '>=16.14.0', npm: '>=8.1.0'}
 
   minimist@1.2.8:
@@ -674,7 +674,7 @@ snapshots:
       quickselect: 3.0.0
       tinyqueue: 3.0.0
 
-  '@maplibre/mlt@1.1.12':
+  '@maplibre/mlt@1.2.0':
     dependencies:
       '@mapbox/point-geometry': 1.1.0
 
@@ -800,12 +800,12 @@ snapshots:
 
   '@types/trusted-types@2.0.7': {}
 
-  '@watergis/maplibre-gl-terradraw@1.15.2(maplibre-gl@6.1.0)(terra-draw-maplibre-gl-adapter@1.4.1(maplibre-gl@6.1.0)(terra-draw@1.32.2))(terra-draw@1.32.2)':
+  '@watergis/maplibre-gl-terradraw@1.15.3(maplibre-gl@6.5.0)(terra-draw-maplibre-gl-adapter@1.4.1(maplibre-gl@6.5.0)(terra-draw@1.32.2))(terra-draw@1.32.2)':
     dependencies:
-      maplibre-gl: 6.1.0
+      maplibre-gl: 6.5.0
       terra-draw: 1.32.2
     optionalDependencies:
-      terra-draw-maplibre-gl-adapter: 1.4.1(maplibre-gl@6.1.0)(terra-draw@1.32.2)
+      terra-draw-maplibre-gl-adapter: 1.4.1(maplibre-gl@6.5.0)(terra-draw@1.32.2)
 
   acorn@8.18.0: {}
 
@@ -909,7 +909,7 @@ snapshots:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  maplibre-gl@6.1.0:
+  maplibre-gl@6.5.0:
     dependencies:
       '@mapbox/point-geometry': 1.1.0
       '@mapbox/tiny-sdf': 2.2.0
@@ -917,7 +917,7 @@ snapshots:
       '@mapbox/vector-tile': 3.0.0
       '@maplibre/geojson-vt': 6.1.1
       '@maplibre/maplibre-gl-style-spec': 26.2.1
-      '@maplibre/mlt': 1.1.12
+      '@maplibre/mlt': 1.2.0
       '@maplibre/vt-pbf': 4.3.2
       '@types/geojson': 7946.0.16
       earcut: 3.2.3
@@ -1036,9 +1036,9 @@ snapshots:
     transitivePeerDependencies:
       - '@typescript-eslint/types'
 
-  terra-draw-maplibre-gl-adapter@1.4.1(maplibre-gl@6.1.0)(terra-draw@1.32.2):
+  terra-draw-maplibre-gl-adapter@1.4.1(maplibre-gl@6.5.0)(terra-draw@1.32.2):
     dependencies:
-      maplibre-gl: 6.1.0
+      maplibre-gl: 6.5.0
       terra-draw: 1.32.2
 
   terra-draw@1.32.2: {}

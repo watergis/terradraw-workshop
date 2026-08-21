@@ -74,7 +74,7 @@ MapLibre does its tile parsing in a Web Worker. In v6 that worker is a real modu
 
 ```js
 // good: sibling files (worker + shared chunk) are reachable
-import * as maplibregl from 'https://unpkg.com/maplibre-gl@6.1.0/dist/maplibre-gl.mjs';
+import * as maplibregl from 'https://unpkg.com/maplibre-gl@6.5.0/dist/maplibre-gl.mjs';
 ```
 
 CDNs that re-bundle and rewrite module paths break this: the main module loads, but the worker request 404s and the map hangs without an error. This is why the live editor in this workshop pins the plain unpkg `dist/maplibre-gl.mjs` URL.

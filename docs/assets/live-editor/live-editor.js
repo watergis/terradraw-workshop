@@ -27,10 +27,10 @@
  */
 
 const PINS = {
-  maplibre: '6.1.0',
+  maplibre: '6.5.0',
   terraDraw: '1.32.2',
   adapter: '1.4.1', // terra-draw-maplibre-gl-adapter
-  plugin: '1.15.2', // @watergis/maplibre-gl-terradraw
+  plugin: '1.15.3', // @watergis/maplibre-gl-terradraw
   leaflet: '1.9.4',
   leafletAdapter: '1.3.0',
   openlayers: '10.9.0', // ol

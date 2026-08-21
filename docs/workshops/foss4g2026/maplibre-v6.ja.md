@@ -74,7 +74,7 @@ MapLibre はタイルのパースを Web Worker で行います。v6 ではこ�
 
 ```js
 // 良い例: 隣接ファイル (ワーカーと共有チャンク) に到達できる
-import * as maplibregl from 'https://unpkg.com/maplibre-gl@6.1.0/dist/maplibre-gl.mjs';
+import * as maplibregl from 'https://unpkg.com/maplibre-gl@6.5.0/dist/maplibre-gl.mjs';
 ```
 
 モジュールパスを書き換えて再バンドルする CDN ではこれが壊れます。メインモジュールは読み込めるものの、ワーカーのリクエストが 404 になり、エラーも出ないまま地図が固まります。このワークショップのライブエディタが unpkg の `dist/maplibre-gl.mjs` の URL をそのまま固定しているのは、このためです。
