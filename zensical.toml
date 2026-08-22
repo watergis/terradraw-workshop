@@ -104,6 +104,8 @@ alternate = [
 # section of i18n/<lang>.toml for each translated build.
 [project.extra.ui]
 slides = "Switch to presentation mode"
+slides_pdf = "Download slides as PDF"
+slides_editor_fallback = "💻 <strong>Live editor</strong> — open this page in the browser to run the code."
 
 # ----------------------------------------------------------------------------
 # Theme options (modern variant is Zensical's default)

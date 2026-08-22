@@ -66,6 +66,7 @@ Generated decks are gitignored; `scripts/build.sh` runs the whole pipeline.
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import posixpath
 import re
@@ -73,6 +74,7 @@ import subprocess
 import sys
 import tempfile
 import textwrap
+import tomllib
 from html import escape
 from pathlib import Path
 from urllib.parse import urlencode
@@ -149,6 +151,7 @@ EDITOR_DIR = "assets/live-editor"
 EDITOR_PAGE = f"{EDITOR_DIR}/embed.html"
 EDITOR_SENTINEL_RE = re.compile(r"\A<!--td-editor:(?P<payload>.*)-->\Z", re.DOTALL)
 # Shown instead of the iframe where it cannot run: printing, or a PDF export.
+# `slides_editor_fallback` in `i18n/<lang>.toml` translates it.
 EDITOR_FALLBACK = (
     "💻 <strong>Live editor</strong> — open this page in the browser to run the code."
 )
@@ -372,6 +375,7 @@ def editor_slide(
     if attrs.get("boilerplate") == "none":
         query["boilerplate"] = "none"
 
+    fallback = ui_strings(LANG).get("slides_editor_fallback", EDITOR_FALLBACK)
     src = f"{asset_prefix(relative)}{EDITOR_PAGE}?{urlencode(query)}"
     title = f"### {heading}\n\n" if heading else ""
     return (
@@ -380,7 +384,7 @@ def editor_slide(
         '<div class="td-editor-embed">\n'
         f'<iframe src="{escape(src, quote=True)}" title="Live editor"'
         ' allow="fullscreen"></iframe>\n'
-        f'<p class="td-editor-fallback">{EDITOR_FALLBACK}</p>\n'
+        f'<p class="td-editor-fallback">{fallback}</p>\n'
         "</div>"
     )
 
@@ -485,36 +489,75 @@ def page_url_for(relative: Path) -> str:
 # two-column grid), and re-parenting their children into the wrapper would
 # break that, so they are left alone — they are short by construction. So is
 # the live-editor slide, whose iframe fills whatever height is left.
+#
+# It also takes over from Marp Core's own auto-scaling, which the script above
+# turns off, so a slide is scaled as a whole and looks the same on screen and
+# in an exported PDF.
 AUTOFIT_SCRIPT = """
 <script>
-addEventListener("load", function () {
-  document.querySelectorAll("section").forEach(function (section) {
-    if (section.classList.contains("lead") ||
-        section.classList.contains("td-section") ||
-        section.classList.contains("td-editor") ||
-        section.classList.contains("td-profile")) return;
+(function () {
+  // Below this a slide is unreadable anyway, so it is left clipped instead.
+  var MIN_SCALE = 0.35;
+
+  function fitted() {
+    return Array.prototype.filter.call(
+      document.querySelectorAll("section"),
+      function (section) {
+        return !(section.classList.contains("lead") ||
+                 section.classList.contains("td-section") ||
+                 section.classList.contains("td-editor") ||
+                 section.classList.contains("td-profile"));
+      }
+    );
+  }
+
+  function wrap(section) {
     var fit = document.createElement("div");
     fit.className = "td-fit";
     while (section.firstChild) fit.appendChild(section.firstChild);
     section.appendChild(fit);
+    return fit;
+  }
+
+  function fit(section) {
+    var wrapper = section.querySelector(".td-fit");
+    if (!wrapper) return;
+    wrapper.style.transform = "";
+    wrapper.style.width = "";
 
     var style = getComputedStyle(section);
     var available =
       section.clientHeight -
       parseFloat(style.paddingTop) -
       parseFloat(style.paddingBottom);
-    var needed = fit.scrollHeight;
-    if (needed > available && available > 0) {
-      var scale = Math.max(0.5, available / needed);
-      fit.style.transformOrigin = "top left";
-      fit.style.transform = "scale(" + scale + ")";
-      fit.style.width = 100 / scale + "%";
+    var needed = wrapper.scrollHeight;
+    var scale = needed > available && available > 0 ? available / needed : 1;
+
+    // A code block wider than the slide is clipped rather than scrolled, so
+    // widen the wrapper's layout box until the widest one fits.
+    wrapper.querySelectorAll("pre, marp-pre").forEach(function (block) {
+      if (block.scrollWidth > block.clientWidth && block.scrollWidth > 0) {
+        scale = Math.min(scale, block.clientWidth / block.scrollWidth);
+      }
+    });
+
+    if (scale < 1) {
+      scale = Math.max(MIN_SCALE, scale);
+      wrapper.style.transformOrigin = "top left";
+      wrapper.style.transform = "scale(" + scale + ")";
+      wrapper.style.width = 100 / scale + "%";
     }
+  }
+
+  addEventListener("load", function () {
+    fitted().forEach(function (section) {
+      wrap(section);
+      fit(section);
+    });
   });
-});
+})();
 </script>
 """
-
 
 # The deck is also embedded in an iframe as a preview on its talk page. There
 # the link back to that very page is noise, so it is dropped when framed.
@@ -533,6 +576,125 @@ BACK_LINK_SCRIPT = """
 })();
 </script>
 """
+
+
+# The language every UI string falls back to when a catalog leaves it out.
+UI_FALLBACK_LANG = "en"
+
+# A deck exports itself through the browser's own print pipeline. Marpit already
+# inlines the `@media print` rules that put one slide on one page, so all that
+# is missing here is the paper size, hiding Marp's on-screen controls (their
+# labels are real text, and would otherwise print as a paragraph), and printing
+# the backgrounds of the pseudo-elements the theme draws its logos with.
+PRINT_CSS = (
+    "@page{size:1280px 720px;margin:0}"
+    "@media print{"
+    ".bespoke-marp-osc,.bespoke-progress-parent{display:none!important}"
+    "svg[data-marpit-svg]>foreignObject>section::before,"
+    "svg[data-marpit-svg]>foreignObject>section::after"
+    "{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}"
+    "}"
+)
+
+PDF_BUTTON_CLASS = "td-osc-pdf"
+
+# Drawn like Marp's own OSC icons: a 100x100 box of white round strokes.
+PDF_ICON_SVG = (
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">'
+    '<path fill="none" stroke="#fff" stroke-linecap="round" '
+    'stroke-linejoin="round" stroke-width="5" '
+    'd="M50 12v50m0 0L30 42m20 20 20-20M18 68v14a6 6 0 0 0 6 6h52a6 6 0 0 0 6-6V68"/>'
+    "</svg>"
+)
+
+# Marp Core scales long code blocks (and fitting headers) down to fit, by
+# re-rendering them into an SVG inside their shadow root. Chrome cannot paint
+# that nested `foreignObject` while printing, so those blocks come out as empty
+# boxes in a PDF — and doing this only while printing is not an option either,
+# because Chrome's print preview does not pick up a `beforeprint` change to a
+# shadow root. So it is turned off for good: dropping `data-auto-scaling` makes
+# the element render its slot as-is (it watches that attribute), and the
+# auto-fit below takes over the scaling for the whole slide instead.
+AUTO_SCALING_SCRIPT = """
+<script>
+document.querySelectorAll("[data-auto-scaling]").forEach(function (element) {
+  element.removeAttribute("data-auto-scaling");
+});
+</script>
+"""
+
+
+# The button joins Marp's own on-screen control bar, so the deck keeps a single
+# row of controls. Clicking it just prints: the stylesheet above turns the deck
+# into one slide per page, and the browser's "Save as PDF" does the rest.
+PDF_BUTTON_SCRIPT = """
+<script>
+addEventListener("load", function () {
+  var osc = document.querySelector(".bespoke-marp-osc");
+  if (!osc) return;
+  var label = %s;
+  var button = document.createElement("button");
+  button.className = "%s";
+  button.tabIndex = -1;
+  button.title = label;
+  // Visually replaced by the icon (text-indent), but kept for screen readers.
+  button.textContent = label;
+  button.addEventListener("click", function () {
+    // Print from outside the click handler, which Safari is happier with.
+    requestAnimationFrame(function () {
+      window.print();
+    });
+  });
+  osc.appendChild(button);
+});
+</script>
+"""
+
+
+_UI_CACHE: dict[str, dict[str, str]] = {}
+
+
+def ui_strings(lang: str) -> dict[str, str]:
+    """The `[ui]` table of `i18n/<lang>.toml`, filled in from English.
+
+    The deck chrome is injected here rather than rendered by a template, so it
+    cannot read `config.extra.ui` the way `overrides/` does. It reads the same
+    catalog instead — the one `scripts/build_i18n.py` copies into the
+    per-language config.
+    """
+    if lang in _UI_CACHE:
+        return _UI_CACHE[lang]
+
+    strings: dict[str, str] = {}
+    for name in dict.fromkeys([UI_FALLBACK_LANG, lang]):
+        catalog = I18N_DIR / f"{name}.toml"
+        if not catalog.is_file():
+            continue
+        with catalog.open("rb") as handle:
+            strings.update(tomllib.load(handle).get("ui", {}))
+    _UI_CACHE[lang] = strings
+    return strings
+
+
+def pdf_button_css() -> str:
+    """The button's size and icon.
+
+    Marp styles `.bespoke-marp-osc > button` for colour, hover and cursor, so
+    those come for free; the size it keys off the `data-bespoke-marp-osc`
+    values it knows about, which is what this rule stands in for.
+    """
+    icon = base64.b64encode(PDF_ICON_SVG.encode("utf-8")).decode("ascii")
+    return (
+        f".bespoke-marp-osc>button.{PDF_BUTTON_CLASS}"
+        "{width:32px;height:32px;line-height:32px;margin-left:8px;"
+        f'background:transparent url("data:image/svg+xml;base64,{icon}") no-repeat 50%;'
+        "background-size:contain;overflow:hidden;text-indent:100%;white-space:nowrap}"
+    )
+
+
+def pdf_button_script() -> str:
+    label = ui_strings(LANG).get("slides_pdf", "Download slides as PDF")
+    return PDF_BUTTON_SCRIPT % (json.dumps(label), PDF_BUTTON_CLASS)
 
 
 def css_url(path: str) -> str:
@@ -564,7 +726,7 @@ def logo_css(meta: dict[str, str]) -> str:
 
 
 def inject_deck_chrome(html: str, href: str, meta: dict[str, str]) -> str:
-    """Add the "back to page" link, the deck logos and the auto-fit script."""
+    """Add the "back to page" link, the logos, auto-fit and the PDF button."""
     styles = (
         ".td-fit{width:100%}"
         "#td-back{position:fixed;top:12px;left:12px;z-index:9999;"
@@ -572,13 +734,15 @@ def inject_deck_chrome(html: str, href: str, meta: dict[str, str]) -> str:
         "background:rgba(63,81,181,.85);padding:8px 12px;border-radius:6px;"
         "opacity:.35;transition:opacity .15s}"
         "#td-back:hover{opacity:1}"
-        "@media print{#td-back{display:none}}"
+        "@media print{#td-back{display:none}}" + pdf_button_css() + PRINT_CSS
     ) + logo_css(meta)
     snippet = (
         f"<style>{styles}</style>"
         f'<a id="td-back" href="{href}">&larr; Back to page</a>'
         + BACK_LINK_SCRIPT
+        + AUTO_SCALING_SCRIPT
         + AUTOFIT_SCRIPT
+        + pdf_button_script()
     )
     if "</body>" not in html:
         return html + snippet

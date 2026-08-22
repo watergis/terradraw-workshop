@@ -6,6 +6,12 @@
       "runtimeExecutable": "uv",
       "runtimeArgs": ["run", "zensical", "serve"],
       "port": 8000
+    },
+    {
+      "name": "site",
+      "runtimeExecutable": "uv",
+      "runtimeArgs": ["run", "python", "scripts/preview.py"],
+      "port": 8000
     }
   ]
 }
