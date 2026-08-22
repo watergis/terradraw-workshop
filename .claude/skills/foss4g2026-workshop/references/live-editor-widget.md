@@ -172,6 +172,33 @@ top-level page like `maplibre-gl-terradraw.md` use `../code/...`.
   because the map styles it loads (OpenFreeMap `bright`, ArcGIS
   `themes/light`) are light-only.
 
+## Presentation mode (`embed.html`)
+
+A Marp deck is standalone HTML: it loads neither the site stylesheet nor
+`extra_javascript`, so `<terra-draw-editor>` cannot be dropped into a slide.
+`docs/assets/live-editor/embed.html` hosts exactly one widget filling the
+viewport, and `scripts/generate_slides.py` gives every editor a slide of its
+own (`_class: td-editor`) holding an iframe onto that page.
+
+- Query parameters mirror the attributes: `start` (required), `answer`, `lib`,
+  `boilerplate=none`, plus `lang` for the widget's UI strings. `--lang` on
+  `generate_slides.py` supplies the last one; `scripts/build.sh` passes the
+  language it is staging.
+- **`start` / `answer` are relative to embed.html, not to the page.** The
+  widget resolves them against `document.baseURI`, which is the embed page.
+  `editor_source()` converts them, going through the page's *URL* directory
+  (`use_directory_urls` adds a segment the `.md` path does not have). Both
+  sides stay relative, so the same deck works from `/` and from `/<lang>/`.
+- The iframe is deliberate, not incidental: keystrokes stay inside it, so
+  typing code never triggers Marp's slide-navigation shortcuts. The cost is
+  that the arrow keys do not advance the deck until the presenter clicks
+  outside the editor.
+- `AUTOFIT_SCRIPT` skips `.td-editor` — re-parenting and scaling its children
+  would break the iframe's height. The theme (`section.td-editor` in both
+  `scripts/slides/themes/*.css`) gives the slide its full-bleed layout and
+  swaps the iframe for `.td-editor-fallback` under `@media print`, since an
+  iframe renders as nothing on paper.
+
 ## Exercise code file conventions
 
 - One directory per exercise: `docs/workshops/foss4g2026/code/<name>/{start.ts,answer.ts}`.

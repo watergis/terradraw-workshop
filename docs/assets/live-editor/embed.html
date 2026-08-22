@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Live editor</title>
+    <!--
+      Standalone host for a single <terra-draw-editor>, filling the viewport.
+
+      The Marp decks behind the "Switch to presentation mode" button are plain
+      static HTML: they do not load the site stylesheet or `live-editor.js`, so
+      the widget cannot be placed in a slide directly. `generate_slides.py`
+      embeds this page in an iframe instead, which also keeps the editor's
+      keyboard input away from Marp's slide-navigation shortcuts.
+
+      Query parameters mirror the widget's attributes:
+
+        start   required; the exercise source, relative TO THIS PAGE
+        answer  optional; the answer source, relative to this page
+        lib     optional; mapping-library environment (see live-editor.js)
+        boilerplate  optional; "none" to skip the MapLibre map boilerplate
+        lang    optional; page language for the widget's UI strings
+
+      `start` and `answer` are written relative to this page rather than to the
+      documentation page, because the widget resolves them against
+      `document.baseURI` — which here is this file. The generator converts them.
+    -->
+    <link rel="stylesheet" href="live-editor.css" />
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+
+      /* Same shape as the widget's own `:fullscreen` rule: toolbar on top, the
+         body taking the rest. The chrome that suits a page — outer margin,
+         border, rounded corners — is dropped, the iframe supplies the frame. */
+      terra-draw-editor.tde {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        margin: 0;
+        border: 0;
+        border-radius: 0;
+      }
+
+      terra-draw-editor.tde .tde-body {
+        height: auto !important;
+        flex: 1 1 auto;
+        min-height: 0;
+      }
+
+      .tde-embed-error {
+        margin: 0;
+        padding: 16px;
+        font: 14px/1.5 system-ui, sans-serif;
+        color: #b00020;
+      }
+    </style>
+    <script>
+      // A classic script, so it runs before the deferred module below:
+      // live-editor.js reads `document.documentElement.lang` at module scope.
+      (function () {
+        var params = new URLSearchParams(location.search);
+
+        var lang = params.get('lang');
+        if (lang) document.documentElement.lang = lang;
+
+        // Only same-directory-relative paths are accepted: this page exists to
+        // show the workshop's own exercise sources, not an arbitrary URL.
+        function localPath(value) {
+          if (!value) return null;
+          if (/^[a-z][a-z0-9+.-]*:/i.test(value) || value.startsWith('//')) return null;
+          var resolved = new URL(value, document.baseURI);
+          if (resolved.origin !== location.origin) return null;
+          return resolved.href;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+          var start = localPath(params.get('start'));
+          if (!start) {
+            var error = document.createElement('p');
+            error.className = 'tde-embed-error';
+            error.textContent =
+              'This live editor was embedded without a usable "start" source.';
+            document.body.appendChild(error);
+            return;
+          }
+
+          var editor = document.createElement('terra-draw-editor');
+          editor.setAttribute('start', start);
+          var answer = localPath(params.get('answer'));
+          if (answer) editor.setAttribute('answer', answer);
+          var lib = params.get('lib');
+          if (lib) editor.setAttribute('lib', lib);
+          if (params.get('boilerplate') === 'none') {
+            editor.setAttribute('boilerplate', 'none');
+          }
+          document.body.appendChild(editor);
+        });
+      })();
+    </script>
+    <script type="module" src="live-editor.js"></script>
+  </head>
+  <body></body>
+</html>
