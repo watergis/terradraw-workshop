@@ -19,8 +19,9 @@ preprocessed first:
   divider — the heading is the section title and the paragraph under it the
   subtitle — and `###` is an ordinary content slide;
 * pymdownx admonitions (`!!!` / `???`) become blockquotes;
-* the `<terra-draw-editor>` live editor is replaced by a pointer back to the
-  web page — it cannot run inside a deck;
+* the `<terra-draw-editor>` live editor becomes a slide of its own holding an
+  iframe onto `assets/live-editor/embed.html`, so the editor stays usable while
+  presenting (see `editor_slide`);
 * relative `*.md` links are rewritten to their `use_directory_urls` form.
 
 A page configures its own deck through its front matter:
@@ -65,6 +66,8 @@ Generated decks are gitignored; `scripts/build.sh` runs the whole pipeline.
 from __future__ import annotations
 
 import argparse
+import json
+import posixpath
 import re
 import subprocess
 import sys
@@ -72,6 +75,7 @@ import tempfile
 import textwrap
 from html import escape
 from pathlib import Path
+from urllib.parse import urlencode
 
 ROOT = Path(__file__).resolve().parent.parent
 I18N_DIR = ROOT / "i18n"
@@ -123,9 +127,10 @@ META_LINE_RE = re.compile(r"^(?P<key>[\w-]+)[ \t]*:[ \t]*(?P<value>.*)$")
 HEADER_LOGO_CLASS = "td-header-logo"
 TITLE_LOGO_CLASS = "td-title-logo"
 EDITOR_RE = re.compile(
-    r"^[ \t]*<terra-draw-editor\b.*?</terra-draw-editor>[ \t]*$\n?",
-    re.MULTILINE | re.DOTALL,
+    r"^[ \t]*<terra-draw-editor\b(?P<attrs>[^>]*)>\s*</terra-draw-editor>[ \t]*$\n?",
+    re.MULTILINE,
 )
+ATTRIBUTE_RE = re.compile(r'(?P<name>[\w-]+)\s*=\s*"(?P<value>[^"]*)"')
 ADMONITION_RE = re.compile(
     r"^(?P<indent>[ \t]*)(?P<marker>!!!|\?\?\?\+?)[ \t]+"
     r'(?P<type>[\w-]+)(?:[ \t]+"(?P<title>[^"]*)")?[ \t]*$'
@@ -135,7 +140,22 @@ TITLE_RE = re.compile(r"^# ")
 HEADING_RE = re.compile(r"^###? ")
 SECTION_RE = re.compile(r"^## ")
 
-EDITOR_NOTE = "> 💻 **Live editor** — open this page in the browser to run the code."
+# The live editor is a Web Component loaded from the site stylesheet and
+# `extra_javascript`, neither of which a deck has. `docs/assets/live-editor/embed.html`
+# hosts one widget on a page of its own, and a deck embeds that in an iframe —
+# which also keeps CodeMirror's keystrokes away from Marp's slide navigation.
+EDITOR_CLASS = "td-editor"
+EDITOR_DIR = "assets/live-editor"
+EDITOR_PAGE = f"{EDITOR_DIR}/embed.html"
+EDITOR_SENTINEL_RE = re.compile(r"\A<!--td-editor:(?P<payload>.*)-->\Z", re.DOTALL)
+# Shown instead of the iframe where it cannot run: printing, or a PDF export.
+EDITOR_FALLBACK = (
+    "💻 <strong>Live editor</strong> — open this page in the browser to run the code."
+)
+
+# Language the decks are generated for, used for the widget's UI strings. Set
+# from `--lang`; `scripts/build.sh` passes the language it is staging.
+LANG = "en"
 
 
 def parse_front_matter(text: str) -> tuple[dict[str, str], str]:
@@ -317,9 +337,94 @@ def profile_slide(meta: dict[str, str], relative: Path, classes: list[str]) -> s
     )
 
 
+def editor_source(value: str, page_dir: str) -> str:
+    """Rewrite a page-relative code path to one relative to the embed page.
+
+    A widget writes its sources the way the Markdown page sees them
+    (`start="../../code/exercise-1/start.ts"`), but the widget that finally
+    reads them lives on `assets/live-editor/embed.html` and resolves them
+    against that page. Both are relative, so this stays language-agnostic: the
+    same deck works from `/` and from `/<lang>/`.
+    """
+    target = posixpath.normpath(posixpath.join(page_dir, value))
+    return posixpath.relpath(target, EDITOR_DIR)
+
+
+def editor_slide(
+    attrs: dict[str, str], relative: Path, classes: list[str], heading: str | None
+) -> str:
+    """Slide holding one live editor, as an iframe onto the embed page.
+
+    The heading is the one the widget sat under on the web page, so the slide
+    keeps the exercise's title; the theme gives `.td-editor` the full-bleed
+    layout and swaps the iframe for `.td-editor-fallback` when printing.
+    """
+    # Sources are written relative to the page's URL, and `use_directory_urls`
+    # gives an ordinary page one more segment than its file has.
+    page_dir = relative.parent
+    if relative.stem != "index":
+        page_dir = page_dir / relative.stem
+    query = {"start": editor_source(attrs["start"], page_dir.as_posix()), "lang": LANG}
+    if attrs.get("answer"):
+        query["answer"] = editor_source(attrs["answer"], page_dir.as_posix())
+    if attrs.get("lib"):
+        query["lib"] = attrs["lib"]
+    if attrs.get("boilerplate") == "none":
+        query["boilerplate"] = "none"
+
+    src = f"{asset_prefix(relative)}{EDITOR_PAGE}?{urlencode(query)}"
+    title = f"### {heading}\n\n" if heading else ""
+    return (
+        f"<!-- _class: {' '.join(classes)} -->\n\n"
+        f"{title}"
+        '<div class="td-editor-embed">\n'
+        f'<iframe src="{escape(src, quote=True)}" title="Live editor"'
+        ' allow="fullscreen"></iframe>\n'
+        f'<p class="td-editor-fallback">{EDITOR_FALLBACK}</p>\n'
+        "</div>"
+    )
+
+
+def apply_editor_slides(
+    slides: list[str], relative: Path, deck_classes: list[str]
+) -> list[str]:
+    """Turn every editor placeholder into its own live-editor slide.
+
+    `to_marp_markdown` leaves a sentinel comment fenced by `---` rules, so the
+    split above has already given each editor a slide to itself; all that is
+    left is to fill it in, with the heading carried over from the slide before.
+    """
+    out: list[str] = []
+    heading: str | None = None
+
+    for slide in slides:
+        match = EDITOR_SENTINEL_RE.match(slide)
+        if match:
+            attrs = json.loads(match.group("payload"))
+            classes = [EDITOR_CLASS, *deck_classes]
+            out.append(editor_slide(attrs, relative, classes, heading))
+            continue
+        for line in slide.split("\n"):
+            if HEADING_RE.match(line) or SECTION_RE.match(line):
+                heading = line.lstrip("#").strip()
+                break
+        out.append(slide)
+
+    return out
+
+
 def to_marp_markdown(source: str, relative: Path) -> tuple[dict[str, str], str]:
     meta, text = parse_front_matter(source)
-    text = EDITOR_RE.sub(EDITOR_NOTE + "\n", text)
+    # Fenced by `---` so the split below gives every editor a slide of its own.
+    text = EDITOR_RE.sub(
+        lambda match: (
+            "\n---\n\n"
+            + "<!--td-editor:"
+            + json.dumps(dict(ATTRIBUTE_RE.findall(match.group("attrs"))))
+            + "-->\n\n---\n"
+        ),
+        text,
+    )
     text = convert_admonitions(text)
     text = LINK_RE.sub(lambda m: rewrite_link(m.group("target")), text)
 
@@ -332,7 +437,7 @@ def to_marp_markdown(source: str, relative: Path) -> tuple[dict[str, str], str]:
 
     theme = SLIDE_THEMES.get(meta.get("slide_theme", ""), THEME_NAME)
 
-    slides = split_into_slides(text)
+    slides = apply_editor_slides(split_into_slides(text), relative, deck_classes)
     if slides:
         # Only a talk deck treats `##` as a section divider — a documentation
         # page uses it for ordinary sections full of prose.
@@ -378,13 +483,15 @@ def page_url_for(relative: Path) -> str:
 #
 # Title, speaker and section slides are laid out by the theme (centred, or a
 # two-column grid), and re-parenting their children into the wrapper would
-# break that, so they are left alone — they are short by construction.
+# break that, so they are left alone — they are short by construction. So is
+# the live-editor slide, whose iframe fills whatever height is left.
 AUTOFIT_SCRIPT = """
 <script>
 addEventListener("load", function () {
   document.querySelectorAll("section").forEach(function (section) {
     if (section.classList.contains("lead") ||
         section.classList.contains("td-section") ||
+        section.classList.contains("td-editor") ||
         section.classList.contains("td-profile")) return;
     var fit = document.createElement("div");
     fit.className = "td-fit";
@@ -496,7 +603,7 @@ def is_translation(path: Path) -> bool:
 
 
 def main() -> int:
-    global DOCS_DIR
+    global DOCS_DIR, LANG
 
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument(
@@ -505,8 +612,14 @@ def main() -> int:
         default=DOCS_DIR,
         help="documentation tree to generate decks for (default: docs/)",
     )
+    parser.add_argument(
+        "--lang",
+        default=LANG,
+        help="language of that tree, for the live editor's UI strings",
+    )
     args = parser.parse_args()
 
+    LANG = args.lang
     DOCS_DIR = args.docs_dir.resolve()
     if not DOCS_DIR.is_dir():
         print(f"No such docs directory: {args.docs_dir}", file=sys.stderr)

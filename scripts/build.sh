@@ -100,7 +100,8 @@ build_language() {
 
 for lang in $languages; do
   uv run python scripts/build_i18n.py "$lang"
-  uv run python scripts/generate_slides.py --docs-dir "build/i18n/$lang/docs"
+  uv run python scripts/generate_slides.py --docs-dir "build/i18n/$lang/docs" \
+    --lang "$lang"
   build_language "$lang"
 done
 
