@@ -15,4 +15,5 @@ site_description = "This is tutorial documentation for Terra Draw drawing librar
 [ui]
 slides = "Switch to presentation mode"
 slides_pdf = "Download slides as PDF"
+slides_exit = "Exit presentation mode (Esc)"
 slides_editor_fallback = "💻 <strong>Live editor</strong> — open this page in the browser to run the code."

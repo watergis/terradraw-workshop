@@ -65,6 +65,7 @@ site_description = "あらゆる地図アプリケーションで使える描画
 [ui]
 slides = "プレゼンモードに切り替え"
 slides_pdf = "スライドを PDF でダウンロード"
+slides_exit = "プレゼンモードを終了 (Esc)"
 slides_editor_fallback = "💻 <strong>ライブエディタ</strong> — コードを動かすには、このページをブラウザで開いてください。"
 
 # Light/dark toggle labels, matched against `theme.palette[].toggle.name`.

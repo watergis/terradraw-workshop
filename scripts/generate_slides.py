@@ -559,25 +559,6 @@ AUTOFIT_SCRIPT = """
 </script>
 """
 
-# The deck is also embedded in an iframe as a preview on its talk page. There
-# the link back to that very page is noise, so it is dropped when framed.
-BACK_LINK_SCRIPT = """
-<script>
-(function () {
-  var framed = false;
-  try {
-    framed = window.self !== window.top;
-  } catch (e) {
-    framed = true;
-  }
-  if (!framed) return;
-  var back = document.getElementById("td-back");
-  if (back) back.remove();
-})();
-</script>
-"""
-
-
 # The language every UI string falls back to when a catalog leaves it out.
 UI_FALLBACK_LANG = "en"
 
@@ -597,6 +578,7 @@ PRINT_CSS = (
 )
 
 PDF_BUTTON_CLASS = "td-osc-pdf"
+EXIT_BUTTON_CLASS = "td-osc-exit"
 
 # Drawn like Marp's own OSC icons: a 100x100 box of white round strokes.
 PDF_ICON_SVG = (
@@ -604,6 +586,21 @@ PDF_ICON_SVG = (
     '<path fill="none" stroke="#fff" stroke-linecap="round" '
     'stroke-linejoin="round" stroke-width="5" '
     'd="M50 12v50m0 0L30 42m20 20 20-20M18 68v14a6 6 0 0 0 6 6h52a6 6 0 0 0 6-6V68"/>'
+    "</svg>"
+)
+
+# Lucide's `square-arrow-right-exit` (ISC, https://lucide.dev/icons/square-arrow-right-exit),
+# kept in its native 24x24 box. Marp draws its own icons with `stroke-width:5`
+# in a 100 box, so `1.2` here is the same ratio and the strokes match weight;
+# the icon is a `background-size:contain` image, so the box size does not show.
+EXIT_ICON_SVG = (
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" '
+    'stroke="#fff" stroke-linecap="round" stroke-linejoin="round" '
+    'stroke-width="1.2">'
+    '<path d="M10 12h11"/>'
+    '<path d="m17 16 4-4-4-4"/>'
+    '<path d="M21 6.344V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14'
+    'a2 2 0 0 0 2-2v-1.344"/>'
     "</svg>"
 )
 
@@ -651,6 +648,65 @@ addEventListener("load", function () {
 """
 
 
+# The way out of the deck: a button next to the others, and Escape.
+#
+# The deck is also embedded in an iframe as a preview on its talk page, where
+# navigating the frame back to that very page would be nonsense — so framed
+# decks get neither.
+#
+# Escape has to be caught on the way down. Marp binds it on `document` to toggle
+# the overview view and calls `preventDefault()`, so a capture listener on
+# `window` runs first and `stopPropagation()` keeps overview from opening. Two
+# cases still belong to Escape, and are left alone: leaving fullscreen (the
+# browser eats the key itself) and closing an open overview.
+EXIT_BUTTON_SCRIPT = """
+<script>
+(function () {
+  var framed = false;
+  try {
+    framed = window.self !== window.top;
+  } catch (e) {
+    framed = true;
+  }
+  if (framed) return;
+
+  var label = %s;
+  var href = %s;
+
+  function exit() {
+    window.location.href = href;
+  }
+
+  addEventListener("load", function () {
+    var osc = document.querySelector(".bespoke-marp-osc");
+    if (!osc) return;
+    var button = document.createElement("button");
+    button.className = "%s";
+    button.tabIndex = -1;
+    button.title = label;
+    // Visually replaced by the icon (text-indent), but kept for screen readers.
+    button.textContent = label;
+    button.addEventListener("click", exit);
+    osc.appendChild(button);
+  });
+
+  window.addEventListener("keydown", function (event) {
+    if (event.key !== "Escape") return;
+    if (event.altKey || event.ctrlKey || event.metaKey) return;
+    if (document.fullscreenElement) return;
+    // Bespoke builds the overview overlay once and keeps it in the document,
+    // marking it `inert` while it is closed — so its mere presence says nothing.
+    var overview = document.querySelector(".bespoke-marp-overview");
+    if (overview && !overview.inert) return;
+    event.preventDefault();
+    event.stopPropagation();
+    exit();
+  }, true);
+})();
+</script>
+"""
+
+
 _UI_CACHE: dict[str, dict[str, str]] = {}
 
 
@@ -676,16 +732,16 @@ def ui_strings(lang: str) -> dict[str, str]:
     return strings
 
 
-def pdf_button_css() -> str:
-    """The button's size and icon.
+def osc_button_css(class_name: str, svg: str) -> str:
+    """A button of ours, sized and iconed like Marp's own.
 
     Marp styles `.bespoke-marp-osc > button` for colour, hover and cursor, so
     those come for free; the size it keys off the `data-bespoke-marp-osc`
     values it knows about, which is what this rule stands in for.
     """
-    icon = base64.b64encode(PDF_ICON_SVG.encode("utf-8")).decode("ascii")
+    icon = base64.b64encode(svg.encode("utf-8")).decode("ascii")
     return (
-        f".bespoke-marp-osc>button.{PDF_BUTTON_CLASS}"
+        f".bespoke-marp-osc>button.{class_name}"
         "{width:32px;height:32px;line-height:32px;margin-left:8px;"
         f'background:transparent url("data:image/svg+xml;base64,{icon}") no-repeat 50%;'
         "background-size:contain;overflow:hidden;text-indent:100%;white-space:nowrap}"
@@ -695,6 +751,15 @@ def pdf_button_css() -> str:
 def pdf_button_script() -> str:
     label = ui_strings(LANG).get("slides_pdf", "Download slides as PDF")
     return PDF_BUTTON_SCRIPT % (json.dumps(label), PDF_BUTTON_CLASS)
+
+
+def exit_button_script(href: str) -> str:
+    label = ui_strings(LANG).get("slides_exit", "Exit presentation mode (Esc)")
+    return EXIT_BUTTON_SCRIPT % (
+        json.dumps(label),
+        json.dumps(href),
+        EXIT_BUTTON_CLASS,
+    )
 
 
 def css_url(path: str) -> str:
@@ -726,23 +791,19 @@ def logo_css(meta: dict[str, str]) -> str:
 
 
 def inject_deck_chrome(html: str, href: str, meta: dict[str, str]) -> str:
-    """Add the "back to page" link, the logos, auto-fit and the PDF button."""
+    """Add the logos, auto-fit, and our own buttons on Marp's control bar."""
     styles = (
         ".td-fit{width:100%}"
-        "#td-back{position:fixed;top:12px;left:12px;z-index:9999;"
-        "font:600 13px/1 system-ui,sans-serif;color:#fff;text-decoration:none;"
-        "background:rgba(63,81,181,.85);padding:8px 12px;border-radius:6px;"
-        "opacity:.35;transition:opacity .15s}"
-        "#td-back:hover{opacity:1}"
-        "@media print{#td-back{display:none}}" + pdf_button_css() + PRINT_CSS
+        + osc_button_css(PDF_BUTTON_CLASS, PDF_ICON_SVG)
+        + osc_button_css(EXIT_BUTTON_CLASS, EXIT_ICON_SVG)
+        + PRINT_CSS
     ) + logo_css(meta)
     snippet = (
         f"<style>{styles}</style>"
-        f'<a id="td-back" href="{href}">&larr; Back to page</a>'
-        + BACK_LINK_SCRIPT
         + AUTO_SCALING_SCRIPT
         + AUTOFIT_SCRIPT
         + pdf_button_script()
+        + exit_button_script(href)
     )
     if "</body>" not in html:
         return html + snippet
