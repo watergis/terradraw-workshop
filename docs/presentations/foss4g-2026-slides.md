@@ -207,6 +207,20 @@ geometry into an API request.
 
 UNDP's **GeoHub** uses the plugin for drawing and measuring.
 
+## terra-draw-cesium-adapter
+
+A CesiumJS adapter for Terra Draw was released last week heading into FOSS4G 2026.
+
+```shell
+npm i @watergis/terra-draw-cesium-adapter
+```
+
+### Drawing on a 3D globe
+
+![Terra Draw drawing on a CesiumJS 3D globe](../assets/images/foss4g2026/cesium-adapter.gif)
+
+The same modes and the same GeoJSON — running on CesiumJS.
+
 ## Contribution
 
 How you can get involved with the Terra Draw project
@@ -221,17 +235,9 @@ How you can get involved with the Terra Draw project
 ### Links and resources
 
 - Terra Draw — <https://terradraw.io> · <https://github.com/JamesLMilner/terra-draw>
+- Terra Draw Cesium Adapter — [github.com/watergis/terra-draw-cesium-adapter](https://github.com/watergis/terra-draw-cesium-adapter)
 - Plugin — <https://terradraw.water-gis.com>
 - Workshop material - <https://workshops.terradraw.water-gis.com>
-
-#### Try it yourself
-
-The FOSS4G 2026 workshop runs through all of this in the browser, with a live
-editor on every page:
-
-Terra Draw workshop - <https://workshops.terradraw.water-gis.com/workshops/foss4g2026/>
-
-No install, no build step — edit the code and the map updates.
 
 ## Questions?
 

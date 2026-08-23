@@ -205,6 +205,21 @@ map.addControl(
 
 UNDP の **GeoHub** では、描画と計測にこのプラグインを使っています。
 
+## terra-draw-cesium-adapter
+
+FOSS4G 2026 を前に、先週 Terra Draw の CesiumJS アダプターが公開されました。
+
+```shell
+npm i @watergis/terra-draw-cesium-adapter
+```
+
+### 3D の地球儀に描く
+
+
+![Terra Draw drawing on a CesiumJS 3D globe](../assets/images/foss4g2026/cesium-adapter.gif)
+
+モードも GeoJSON もそのままで、CesiumJS の上で動きます。
+
 ## コントリビューション
 
 Terra Draw プロジェクトへの参加方法
@@ -219,17 +234,9 @@ Terra Draw プロジェクトへの参加方法
 ### リンクと参考資料
 
 - Terra Draw — <https://terradraw.io> · <https://github.com/JamesLMilner/terra-draw>
+- Terra Draw Cesium Adapter — [github.com/watergis/terra-draw-cesium-adapter](https://github.com/watergis/terra-draw-cesium-adapter)
 - プラグイン — <https://terradraw.water-gis.com>
 - ワークショップ教材 - <https://workshops.terradraw.water-gis.com>
-
-#### 自分で試してみる
-
-FOSS4G 2026 のワークショップでは、ここまでの内容をすべてブラウザ上で扱います。
-どのページにもライブエディタがあります。
-
-Terra Draw ワークショップ - <https://workshops.terradraw.water-gis.com/workshops/foss4g2026/>
-
-インストールもビルドも不要 — コードを編集すれば地図が更新されます。
 
 ## 質問はありますか?
 
