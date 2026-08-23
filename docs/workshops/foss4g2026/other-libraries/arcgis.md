@@ -64,4 +64,4 @@ view.when(() => {
 
 ## What's Next?
 
-That's the end of the hands-on content — six mapping libraries, one Terra Draw API. Head over to the [Q&A page](../support.md) for how to stay in touch with the Terra Draw community.
+One library left — and it is not a flat map at all: [CesiumJS](./cesium.md), a 3D globe.

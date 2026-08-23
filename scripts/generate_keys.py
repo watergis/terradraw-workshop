@@ -18,7 +18,12 @@ message instead of a provider error.
 
 from pathlib import Path
 
-KEY_NAMES = ["MAPBOX_ACCESS_TOKEN", "GOOGLE_MAPS_API_KEY", "ARCGIS_API_KEY"]
+KEY_NAMES = [
+    "MAPBOX_ACCESS_TOKEN",
+    "GOOGLE_MAPS_API_KEY",
+    "ARCGIS_API_KEY",
+    "CESIUM_ION_ACCESS_TOKEN",
+]
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT_FILE = ROOT / "docs" / "assets" / "live-editor" / "keys.js"

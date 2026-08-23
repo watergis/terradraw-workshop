@@ -188,14 +188,15 @@ See `docs/presentations/foss4g-2026-slides.md` for a working example.
 
 ### Live-editor API keys
 
-Some live-editor examples (Mapbox GL JS, Google Maps) need API keys, which
+Some live-editor examples (Mapbox GL JS, Google Maps, CesiumJS) need API keys,
+which
 are baked into the site at build time by `scripts/generate_keys.py`:
 
 - **Locally**: copy `.env.example` to `.env` and fill in the keys. `make build`
   and `make serve` pick them up and write the gitignored
   `docs/assets/live-editor/keys.js`.
-- **Cloudflare Pages**: set `MAPBOX_ACCESS_TOKEN` and `GOOGLE_MAPS_API_KEY`
-  as build environment variables in the Pages project settings, and set the
+- **Cloudflare Pages**: set `MAPBOX_ACCESS_TOKEN`, `GOOGLE_MAPS_API_KEY` and
+  `CESIUM_ION_ACCESS_TOKEN` as build environment variables in the Pages project settings, and set the
   build command to `make build` (the script prefers environment variables over
   `.env`).
 
