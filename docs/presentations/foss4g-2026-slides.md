@@ -211,15 +211,15 @@ UNDP's **GeoHub** uses the plugin for drawing and measuring.
 
 A CesiumJS adapter for Terra Draw was released last week heading into FOSS4G 2026.
 
-```shell
-npm i @watergis/terra-draw-cesium-adapter
-```
-
 ### Drawing on a 3D globe
 
 ![Terra Draw drawing on a CesiumJS 3D globe](../assets/images/foss4g2026/cesium-adapter.gif)
 
 The same modes and the same GeoJSON — running on CesiumJS.
+
+```shell
+npm i @watergis/terra-draw-cesium-adapter
+```
 
 ## Contribution
 

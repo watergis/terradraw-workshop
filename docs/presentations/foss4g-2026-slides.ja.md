@@ -209,16 +209,16 @@ UNDP の **GeoHub** では、描画と計測にこのプラグインを使って
 
 FOSS4G 2026 を前に、先週 Terra Draw の CesiumJS アダプターが公開されました。
 
-```shell
-npm i @watergis/terra-draw-cesium-adapter
-```
-
 ### 3D の地球儀に描く
 
 
 ![Terra Draw drawing on a CesiumJS 3D globe](../assets/images/foss4g2026/cesium-adapter.gif)
 
 モードも GeoJSON もそのままで、CesiumJS の上で動きます。
+
+```shell
+npm i @watergis/terra-draw-cesium-adapter
+```
 
 ## コントリビューション
 
