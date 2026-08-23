@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import http.server
+import os
 import subprocess
 import sys
 import threading
@@ -37,6 +38,16 @@ WATCH_ROOTS = ("docs", "i18n", "overrides", "scripts")
 WATCH_FILES = ("zensical.toml",)
 SLIDE_SUFFIX = "_slide"
 
+# Dependency trees and caches: nothing here is a source, and walking them costs
+# more than everything else combined (scripts/ alone holds ~11k node_modules
+# files, statted on every poll).
+IGNORE_DIRS = frozenset(
+    ("node_modules", "__pycache__", ".venv", ".cache", ".ruff_cache")
+)
+# Build outputs that land under a watched root. They are rewritten by every
+# build, so watching them would make each rebuild trigger the next one.
+IGNORE_FILES = (ROOT / "docs" / "assets" / "live-editor" / "keys.js",)
+
 POLL_SECONDS = 1.0
 
 # Polled by the injected script; changes once a rebuild finishes.
@@ -46,13 +57,24 @@ RELOAD_SCRIPT = """
 <script>
   // Injected by scripts/preview.py — reloads the page after a rebuild.
   (async () => {
+    // A rebuild reload should not throw away where the reader was.
+    const key = "__preview_scroll:" + location.pathname;
+    const saved = sessionStorage.getItem(key);
+    if (saved !== null) {
+      sessionStorage.removeItem(key);
+      addEventListener("load", () => scrollTo(0, Number(saved)));
+    }
+
     const read = async () =>
       (await fetch("__BUILD_ID_PATH__", { cache: "no-store" })).text();
     let current = await read();
     setInterval(async () => {
       try {
         const latest = await read();
-        if (latest !== current) location.reload();
+        if (latest !== current) {
+          sessionStorage.setItem(key, String(scrollY));
+          location.reload();
+        }
       } catch {
         /* the server is mid-restart; try again on the next tick */
       }
@@ -68,10 +90,16 @@ def fingerprint() -> dict[Path, tuple[int, int]]:
     paths = [ROOT / name for name in WATCH_FILES]
     for name in WATCH_ROOTS:
         root = ROOT / name
-        if root.is_dir():
-            paths.extend(root.rglob("*"))
+        if not root.is_dir():
+            continue
+        for parent, dirs, files in os.walk(root):
+            # Pruning in place stops os.walk from descending into them at all.
+            dirs[:] = [d for d in dirs if d not in IGNORE_DIRS]
+            paths.extend(Path(parent) / file for file in files)
     for path in paths:
-        if not path.is_file() or path.name.endswith(f"{SLIDE_SUFFIX}.html"):
+        if path.name.endswith(f"{SLIDE_SUFFIX}.html") or path in IGNORE_FILES:
+            continue
+        if not path.is_file():
             continue
         info = path.stat()
         state[path] = (info.st_size, info.st_mtime_ns)
