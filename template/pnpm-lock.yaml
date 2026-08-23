@@ -28,8 +28,8 @@ importers:
         specifier: ^7.2.0
         version: 7.2.0(svelte@5.56.8)(vite@8.2.0)
       '@watergis/maplibre-gl-terradraw':
-        specifier: ^1.15.3
-        version: 1.15.3(maplibre-gl@6.5.0)(terra-draw-maplibre-gl-adapter@1.4.1(maplibre-gl@6.5.0)(terra-draw@1.32.2))(terra-draw@1.32.2)
+        specifier: ^1.16.0
+        version: 1.16.0(maplibre-gl@6.5.0)(terra-draw-maplibre-gl-adapter@1.4.1(maplibre-gl@6.5.0)(terra-draw@1.32.2))(terra-draw@1.32.2)
       svelte:
         specifier: ^5.56.8
         version: 5.56.8
@@ -264,8 +264,8 @@ packages:
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
 
-  '@watergis/maplibre-gl-terradraw@1.15.3':
-    resolution: {integrity: sha512-lrBoSuCIIrJ/53Hi5o7HQzWeePSAkj1sMe+bsYjkaavuI3nmuYaQo/pDRAML0a0yTk0/omcJOmmrp4+rBZldjA==}
+  '@watergis/maplibre-gl-terradraw@1.16.0':
+    resolution: {integrity: sha512-JBDrm6uOU5pO0wIIDa4gu16V8ly5BzBy1qNZGM/rdjpD+OUBmldcwNXc8oQHHxF2QcqOubnVLcvAvPxSzvGmWg==}
     engines: {pnpm: ^11.0.0}
     peerDependencies:
       maplibre-gl: ^4.0.0 || ^5.0.0 || ^6.0.0
@@ -800,7 +800,7 @@ snapshots:
 
   '@types/trusted-types@2.0.7': {}
 
-  '@watergis/maplibre-gl-terradraw@1.15.3(maplibre-gl@6.5.0)(terra-draw-maplibre-gl-adapter@1.4.1(maplibre-gl@6.5.0)(terra-draw@1.32.2))(terra-draw@1.32.2)':
+  '@watergis/maplibre-gl-terradraw@1.16.0(maplibre-gl@6.5.0)(terra-draw-maplibre-gl-adapter@1.4.1(maplibre-gl@6.5.0)(terra-draw@1.32.2))(terra-draw@1.32.2)':
     dependencies:
       maplibre-gl: 6.5.0
       terra-draw: 1.32.2
