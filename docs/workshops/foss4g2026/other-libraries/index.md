@@ -10,13 +10,14 @@ Everything you learned in this workshop was written against MapLibre GL JS — b
 | Mapbox GL JS | `terra-draw-mapbox-gl-adapter` | `TerraDrawMapboxGLAdapter` |
 | Google Maps JS API | `terra-draw-google-maps-adapter` | `TerraDrawGoogleMapsAdapter` |
 | ArcGIS JS SDK | `terra-draw-arcgis-adapter` | `TerraDrawArcGISMapsSDKAdapter` |
+| CesiumJS | `@watergis/terra-draw-cesium-adapter` | `TerraDrawCesiumAdapter` |
 
 ---
 
 Each of the following pages shows the same small drawing app — the one you built in the exercises — running on a different mapping library, live in your browser:
 
 - **[Leaflet](./leaflet.md)** — a hands-on migration exercise we will do together in the workshop.
-- **[OpenLayers](./openlayers.md)**, **[Mapbox GL JS](./mapbox.md)**, **[Google Maps](./google-maps.md)** and **[ArcGIS Maps SDK](./arcgis.md)** — completed examples you can explore at your own pace after the workshop.
+- **[OpenLayers](./openlayers.md)**, **[Mapbox GL JS](./mapbox.md)**, **[Google Maps](./google-maps.md)**, **[ArcGIS Maps SDK](./arcgis.md)** and **[CesiumJS](./cesium.md)** — completed examples you can explore at your own pace after the workshop. The last one is a 3D globe: the same drawing code, on a sphere.
 
 In every example the modes, styles, events and data management code is **byte-for-byte identical**. The only parts that change are:
 

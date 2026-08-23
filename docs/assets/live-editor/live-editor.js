@@ -10,8 +10,9 @@
  *     height="480">
  *   </terra-draw-editor>
  *
- * Left pane: editable TypeScript (CodeMirror 6). Right pane: sandboxed iframe
- * running the code against a map. Tabs switch between the exercise starter
+ * Left pane: editable TypeScript (CodeMirror 6). Right pane: a same-origin
+ * iframe (written into, not `srcdoc` — see renderPreview) running the code
+ * against a map. Tabs switch between the exercise starter
  * code and the read-only answer. TypeScript is stripped in the browser with
  * Sucrase — no type checking, no build step.
  *
@@ -41,6 +42,8 @@ const PINS = {
   googleAdapter: '1.6.1',
   arcgis: '4.33', // js.arcgis.com ESM CDN version
   arcgisAdapter: '1.3.0',
+  cesium: '1.144.0', // bundled ESM build under Build/Cesium
+  cesiumAdapter: '0.0.1', // @watergis/terra-draw-cesium-adapter
   sucrase: '3.35.1',
   codemirror: '6.0.2',
   langJavascript: '6.2.5',
@@ -62,6 +65,12 @@ const TERRA_DRAW_URL = `https://unpkg.com/terra-draw@${PINS.terraDraw}/dist/terr
 // The Terra Draw adapters ship real ESM builds used directly from unpkg; their
 // bare imports ('terra-draw', 'leaflet') resolve through the same import map,
 // so all modules share single instances.
+// Cesium is the exception to the unpkg-default rule: its package `module` field
+// points at the *unbundled* Source/Cesium.js (thousands of files), so the import
+// map uses the pre-bundled `Build/Cesium/index.js` instead. Cesium also resolves
+// its Workers and Assets at runtime from `window.CESIUM_BASE_URL` — the adapter
+// clamps every feature to the ground, which loads Assets/approximateTerrainHeights.json
+// — so that global is declared via the optional `globals` field below.
 // `keys` lists the API-key placeholders (see keys.js) the environment needs.
 const LIBS = {
   maplibre: {
@@ -118,6 +127,15 @@ const LIBS = {
     },
     css: [`https://js.arcgis.com/${PINS.arcgis}/@arcgis/core/assets/esri/themes/light/main.css`],
     keys: []
+  },
+  cesium: {
+    imports: {
+      cesium: `https://unpkg.com/cesium@${PINS.cesium}/Build/Cesium/index.js`,
+      '@watergis/terra-draw-cesium-adapter': `https://unpkg.com/@watergis/terra-draw-cesium-adapter@${PINS.cesiumAdapter}/dist/terra-draw-cesium-adapter.modern.js`
+    },
+    css: [`https://unpkg.com/cesium@${PINS.cesium}/Build/Cesium/Widgets/widgets.css`],
+    globals: { CESIUM_BASE_URL: `https://unpkg.com/cesium@${PINS.cesium}/Build/Cesium/` },
+    keys: ['CESIUM_ION_ACCESS_TOKEN']
   }
 };
 
@@ -653,11 +671,19 @@ class TerraDrawEditor extends HTMLElement {
     // site, so sharing the docs origin is an acceptable trade.
     iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
     iframe.setAttribute('allow', 'fullscreen');
-    iframe.srcdoc = this.buildSrcdoc(userJs);
     host.appendChild(iframe);
+    // The document is written into the (about:blank) iframe rather than set as
+    // `srcdoc`: an about:srcdoc document has an opaque origin even with
+    // allow-same-origin, and Cesium's terrain worker tasks then never resolve —
+    // the globe stays black. Writing into about:blank inherits the page's real
+    // origin and everything behaves like a normal same-origin page.
+    const doc = iframe.contentDocument;
+    doc.open();
+    doc.write(this.buildDocument(userJs));
+    doc.close();
   }
 
-  buildSrcdoc(userJs) {
+  buildDocument(userJs) {
     const consoleHook = `
       const tdeId = ${JSON.stringify(this.tdeId)};
       const send = (level, text) => parent.postMessage({ tdeId, level, text }, '*');
@@ -675,6 +701,11 @@ class TerraDrawEditor extends HTMLElement {
     const cssLinks = config.css
       .map((href) => `<link rel="stylesheet" href="${href}">`)
       .join('\n');
+    // Globals a library needs before its module graph runs (Cesium's
+    // CESIUM_BASE_URL). Emitted as a classic script so it executes first.
+    const globalsScript = config.globals
+      ? `<script>Object.assign(window, ${JSON.stringify(config.globals)});<\/script>`
+      : '';
     const boilerplate = this.useBoilerplate
       ? `<script type="module">${MAP_BOILERPLATE}</script>`
       : '';
@@ -691,6 +722,7 @@ ${cssLinks}
   #sidebar button { padding: 6px 8px; cursor: pointer; }
   #map { flex: 1; }
 </style>
+${globalsScript}
 <script type="importmap">${JSON.stringify(importMap)}</script>
 <script>${consoleHook}</script>
 </head>

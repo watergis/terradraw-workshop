@@ -20,7 +20,7 @@
 - `height` (optional, px, default 480).
 - `lib` (optional, default `maplibre`): which preview environment the iframe
   provides — one of the `LIBS` registry keys in live-editor.js (`maplibre`,
-  `leaflet`, `openlayers`, `mapbox`, `google`, `arcgis`). Exactly ONE
+  `leaflet`, `openlayers`, `mapbox`, `google`, `arcgis`, `cesium`). Exactly ONE
   library per widget instance; environments are never mixed (the Leaflet
   migration page uses two separate widgets instead).
 - `boilerplate="none"` (optional): skip the MapLibre map boilerplate so the
@@ -30,7 +30,9 @@
 
 ## Per-library environments (`LIBS` registry)
 
-Each `LIBS` entry holds import-map entries, CSS URLs, and a `keys` list of
+Each `LIBS` entry holds import-map entries, CSS URLs, an optional `globals`
+map (window properties emitted as a classic script in the iframe `<head>`
+*before* the import map — only Cesium needs one), and a `keys` list of
 API-key placeholder names. `terra-draw` is merged into every import map from
 the shared unpkg `terra-draw.modern.js` URL. Verified CDN facts (2026-07):
 
@@ -45,6 +47,17 @@ the shared unpkg `terra-draw.modern.js` URL. Verified CDN facts (2026-07):
   "https://js.arcgis.com/4.33/@arcgis/core/"` works. Esri's `osm` basemap is
   403-blocked by OSM's tile policy — use a keyless CARTO `WebTileLayer`
   basemap instead (as in code/other-libraries/arcgis/start.ts).
+- Cesium: the npm `module` field points at the *unbundled* `Source/Cesium.js`,
+  so use the pre-bundled `Build/Cesium/index.js` on unpkg instead, plus
+  `Build/Cesium/Widgets/widgets.css`. Cesium resolves Workers/Assets at runtime
+  from `window.CESIUM_BASE_URL` (the adapter ground-clamps every feature, which
+  loads `Assets/approximateTerrainHeights.json`) — hence the `globals` field.
+  `@watergis/terra-draw-cesium-adapter` ships `dist/*.modern.js` importing only
+  bare `terra-draw`; Cesium goes in via constructor `lib`. Imagery and terrain
+  come from Cesium ion, so the env declares `keys: ['CESIUM_ION_ACCESS_TOKEN']`
+  and the example sets `Cesium.Ion.defaultAccessToken = '__CESIUM_ION_ACCESS_TOKEN__'`.
+  A Japan-only tile set (e.g. GSI `seamlessphoto`) cannot be the *base* layer:
+  it has no zoom 0/1 tiles, so the quadtree never refines and the globe is black.
 - Google Maps: `@googlemaps/js-api-loader@2` from esm.sh
   (`setOptions` + `await importLibrary('maps')`, top-level await is fine in
   the module script). Adapter takes `lib: google.maps`; start draw inside
@@ -56,7 +69,8 @@ the shared unpkg `terra-draw.modern.js` URL. Verified CDN facts (2026-07):
 `docs/assets/live-editor/keys.js` (env vars first — that's Cloudflare Pages —
 then `.env`; see `.env.example` and README). The widget lazy-imports it
 (404 → empty) and replaces `__MAPBOX_ACCESS_TOKEN__` / `__GOOGLE_MAPS_API_KEY__`
-/ `__ARCGIS_API_KEY__` literals in the transpiled user code before running;
+/ `__ARCGIS_API_KEY__` / `__CESIUM_ION_ACCESS_TOKEN__` literals in the
+transpiled user code before running;
 a missing-but-referenced key adds a friendly console-strip message.
 
 **Path rule (important):** Zensical uses directory URLs, so a page
@@ -90,8 +104,14 @@ top-level page like `maplibre-gl-terradraw.md` use `../code/...`.
   live-editor.js. `entry.js` exports `EditorView`, `basicSetup`, `javascript`,
   `syntaxHighlighting`, `classHighlighter` and Sucrase's `transform`.
 
-- **Preview**: sandboxed `<iframe srcdoc>` (`sandbox="allow-scripts"`),
-  recreated on every Run. It contains an import map (versions pinned in the
+- **Preview**: sandboxed iframe (`sandbox="allow-scripts allow-same-origin"`),
+  recreated on every Run. The document is **written into the about:blank
+  iframe** (`contentDocument.open/write/close`, `buildDocument()`), NOT set as
+  `srcdoc`: an `about:srcdoc` document has an opaque origin (`location.origin`
+  === "null") even with allow-same-origin, and Cesium's terrain worker tasks
+  then never resolve — `createMesh()` hangs, no tile ever reaches READY and the
+  globe renders black. Writing into about:blank inherits the page's real origin.
+  Do not switch this back to `srcdoc`. It contains an import map (versions pinned in the
   `PINS` constant at the top of live-editor.js):
   - `maplibre-gl` → esm.sh (maplibre ships UMD only; esm.sh adds named ESM
     exports — jsdelivr `+esm` does NOT export `LngLat` etc. and breaks the

@@ -46,6 +46,7 @@ nav = [
         { "Mapbox GL JS" = "workshops/foss4g2026/other-libraries/mapbox.md" },
         { "Google Maps" = "workshops/foss4g2026/other-libraries/google-maps.md" },
         { "ArcGIS Maps SDK" = "workshops/foss4g2026/other-libraries/arcgis.md" },
+        { "CesiumJS" = "workshops/foss4g2026/other-libraries/cesium.md" },
       ] },
       { "Q&A" = "workshops/foss4g2026/support.md" },
     ] },

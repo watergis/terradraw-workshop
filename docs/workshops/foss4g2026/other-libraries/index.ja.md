@@ -10,13 +10,14 @@
 | Mapbox GL JS | `terra-draw-mapbox-gl-adapter` | `TerraDrawMapboxGLAdapter` |
 | Google Maps JS API | `terra-draw-google-maps-adapter` | `TerraDrawGoogleMapsAdapter` |
 | ArcGIS JS SDK | `terra-draw-arcgis-adapter` | `TerraDrawArcGISMapsSDKAdapter` |
+| CesiumJS | `@watergis/terra-draw-cesium-adapter` | `TerraDrawCesiumAdapter` |
 
 ---
 
 以下の各ページでは、演習で作ったものと同じ小さな描画アプリを、それぞれ別の地図ライブラリで、ブラウザ上で実際に動かしながら紹介します。
 
 - **[Leaflet](./leaflet.md)** — ワークショップで一緒に取り組む、移行のハンズオン演習です。
-- **[OpenLayers](./openlayers.md)**、**[Mapbox GL JS](./mapbox.md)**、**[Google Maps](./google-maps.md)**、**[ArcGIS Maps SDK](./arcgis.md)** — 完成済みのサンプルです。ワークショップの後、ご自身のペースで試してみてください。
+- **[OpenLayers](./openlayers.md)**、**[Mapbox GL JS](./mapbox.md)**、**[Google Maps](./google-maps.md)**、**[ArcGIS Maps SDK](./arcgis.md)**、**[CesiumJS](./cesium.md)** — 完成済みのサンプルです。ワークショップの後、ご自身のペースで試してみてください。最後の 1 つは 3D 地球儀です。まったく同じ描画コードが、球体の上で動きます。
 
 どの例でも、モード・スタイル・イベント・データ管理のコードは**まったく同一**です。変わるのは次の 3 か所だけです。
 
