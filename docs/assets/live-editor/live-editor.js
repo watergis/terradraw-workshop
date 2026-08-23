@@ -43,7 +43,7 @@ const PINS = {
   arcgis: '4.33', // js.arcgis.com ESM CDN version
   arcgisAdapter: '1.3.0',
   cesium: '1.144.0', // bundled ESM build under Build/Cesium
-  cesiumAdapter: '0.0.1', // @watergis/terra-draw-cesium-adapter
+  cesiumAdapter: '0.0.2', // @watergis/terra-draw-cesium-adapter
   sucrase: '3.35.1',
   codemirror: '6.0.2',
   langJavascript: '6.2.5',
