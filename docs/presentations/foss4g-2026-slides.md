@@ -241,4 +241,4 @@ How you can get involved with the Terra Draw project
 
 ## Questions?
 
-Thank you for listening
+Thank you for your attention!
